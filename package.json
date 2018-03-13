@@ -1,0 +1,24 @@
+{
+  "name": "aiglobelam.github.io",
+  "version": "1.0.0",
+  "description": "Jens Helds Github Homepage",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aiglobelam/Aiglobelam.github.io.git"
+  },
+  "keywords": [
+    "Aiglobelam",
+    "Jens",
+    "Held"
+  ],
+  "author": "Aiglobelam aka Jens Held",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Aiglobelam/Aiglobelam.github.io/issues"
+  },
+  "homepage": "https://github.com/Aiglobelam/Aiglobelam.github.io#readme"
+}
