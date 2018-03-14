@@ -1,11 +1,13 @@
+<!-- This is the "template" used in webpack.config.js to inject the bundles into -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>My App</title>
+  <title>My App Title</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="app"></div>
-<script type="text/javascript" src="index_bundle.js"></script></body>
+  <div id="appXXX"></div>
+  <!-- Somewhere around here webpack will place its built bundles... But this comment will not be included in the built bundle... -->
+<script type="text/javascript" src="appIndexBundle.js"></script></body>
 </html>
