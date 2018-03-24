@@ -1,7 +1,9 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 
-// We have configured in Webpack to include all required css into our bundle...
+// We have configured in Webpack to include all
+// "required" css into our bundle/component
+// webpack.config.js => modules.rules test css
 require('./index.css');
 
 // state (not req)

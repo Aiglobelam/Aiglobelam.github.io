@@ -9,13 +9,20 @@
     "dev": "webpack-dev-server --open"
   },
   "babel": {
-    "presets": ["env", "react"]
+    "presets": [
+      "env",
+      "react"
+    ]
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Aiglobelam/Aiglobelam.github.io.git"
   },
-  "keywords": ["Aiglobelam","Jens","Held"],
+  "keywords": [
+    "Aiglobelam",
+    "Jens",
+    "Held"
+  ],
   "author": "Aiglobelam aka Jens Held",
   "license": "ISC",
   "bugs": {
@@ -35,6 +42,7 @@
     "webpack-dev-server": "^3.1.1"
   },
   "dependencies": {
+    "prop-types": "^15.6.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0"
   }
