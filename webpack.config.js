@@ -30,7 +30,7 @@ module.exports = {
    },
    // 3) Where to place the transformed code.
    output: {
-       // __dirname => the name of the directory that the currently recidees in.
+       // __dirname => the name of the directory that the code currently recidees in.
       path: path.resolve(__dirname, 'dist'),
       // filename => Name of file webpack should create, contains all transformed code
       filename: 'appIndexBundle.js',
