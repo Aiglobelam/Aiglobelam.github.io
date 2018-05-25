@@ -7,8 +7,8 @@
 
 var path = require('path');
 
-// TGenerate an HTML5 file that includes all your webpack bundles in the body using script tags.
-// Just add the plugin to your webpack config.
+// This plugin is used to generate an HTML5 file that includes all your webpack bundles 
+// in the body using <script ../> tags. Just add the plugin to your webpack config.
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -38,7 +38,8 @@ module.exports = {
    plugins: [
       // Use our ordinary app/index.html file as a "template" for HtmlWebpackPlugin
       // HtmlWebpackPlugin then creates a new index.html file in the "dist" folder as specified by "output.path" above.
-      // Then HtmlWebpackPlugin will "inject" a <script> tag that points to our built 'appIndexBundle.js' file as specified in "output.filename"
+      // Then HtmlWebpackPlugin will "inject" a <script> tag that points to our built 'appIndexBundle.js' 
+      // file as specified in "output.filename"
       new HtmlWebpackPlugin({
          // WARNING IN BUILD
          // "Entrypoint undefined = index.html" 

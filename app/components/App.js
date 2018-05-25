@@ -1,14 +1,17 @@
 var React = require('react');
 var Popular = require('./Popular');
-// state (not req)
-// lifecycle events (not req)
+// state (not required)
+// lifecycle events (not reqquired)
 // UI (required)
 class App extends React.Component {
-    // UI
+    
+    //--------//
+    //-- UI --//
+    //--------//
     render() {
         return (
             <div className='container'>
-                Hello World!!! <Popular/> 
+                <Popular/> 
             </div>
         )
     }
