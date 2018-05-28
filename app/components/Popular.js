@@ -3,14 +3,16 @@ var React = require('react');
 class Popular extends React.Component {
 
     constructor (props) {
+        // TODO: Why Super props? see learnings/constructorSuperProps.js
         super(props);
         this.state = {
             selectedLanguage: 'All'
         }
 
         // Concerning the "<li onClick={ this.updateLanguage }" below...
-        // Either bind "this" to the function that should be the onClick handler, here in the constructor
-        // this.updateLanguage = this.updateLanguage.bind(this);
+        // Either bind "this" to the function that should be the onClick handler, 
+        // * here in the constructor
+        // LIKE => this.updateLanguage = this.updateLanguage.bind(this);
         // Or use an "arrow function" in the onClick definition. (arrow funcitons auto bind this)
         // <li onClick={ (event) => this.updateLanguage(event, l) }
         // But that solution will create a "new function" every time render is invoked...
@@ -23,10 +25,10 @@ class Popular extends React.Component {
         // see configuration in package.json
     }
 
-    // Arrow functions can be used here thanx to prposal  "Class field declaration for JS"
+    // Arrow functions can be used here, when defining a function, thanx to prposal "Class field declaration for JS"
     // https://github.com/tc39/proposal-class-fields
-    // By using that we can use arrow functions which in turns let us use
-    // the  "this" keyword inside of updateLanguage
+    // By using that propsal, we can use arrow functions which in turns let us use
+    // the "this" keyword inside of updateLanguage
     updateLanguage = (event, language) => {
         //updateLanguage (language) {
         console.log('updateLanguage was invoked with param', language, event);
@@ -50,18 +52,23 @@ class Popular extends React.Component {
     // which will then re-render only when the props change (because the handler reference now never changes):
     // Solution 2) 
     // The easy solution use es5 bind to pass parameters =)
-    // this.updateLanguage.bind(nameOfParameter) 
+    // NOTE: Bind creates a new function, it does not invoke the function.
+    // this.updateLanguage.bind(null, nameOfParameter) 
+    // this.updateLanguage.bind(null, language)
+    // null => If we have already bound "this" to the function
+    //      => Either in the constructor or by using bind or by using an arrow function
     render() {
         const languages = ['All', 'Java Script', 'Ruby', 'Java', 'CSS', 'Python'];
-        console.log('render this', this);
+        console.log('Popular render()');
         return (            
             <div>Popular
                 <ul className='languages'>
                     { 
                         languages.map(l => {
-                            console.log(l);
                             return (
-                                <li onClick={ (event) => this.updateLanguage(event, l) }
+                                <li 
+                                    style={ this.selectedLanguageStyle(l) }
+                                    onClick={ (event) => this.updateLanguage(event, l) }
                                     key={l}>
                                     {l}
                                 </li>
@@ -71,6 +78,10 @@ class Popular extends React.Component {
                 </ul>
             </div>
         )
+    }
+
+    selectedLanguageStyle = (language) => {
+        return language === this.state.selectedLanguage ? { color: '#d0021b' } : null
     }
 }
 

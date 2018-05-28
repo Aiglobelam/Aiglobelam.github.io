@@ -20,8 +20,6 @@ li {
     /* Display "ul/li" as row horisontally */
     display: flex; 
     justify-content: center;
-    background: brown;
-
 }
 
 .languages li {

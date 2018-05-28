@@ -86,7 +86,7 @@ var zebra = new Animal('white', 'donkey', 'kong');
 //----------------
 // Window binding
 //----------------
-// if you are not using "new"  OR "call apply or bind" then "this" defaults to window object
+// if you are not using "new" OR "call apply or bind" then "this" defaults to window object
 
 var sayAgeW = () => console.log(this.age);
 sayAgeW(); // undefined
