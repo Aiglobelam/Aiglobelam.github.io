@@ -1,32 +1,40 @@
 var React = require('react');
 var PropTypes = require('prop-types');
 
-const selectedLanguageStyle = (language1, language2) => {
-    return language1 === language2 ? { color: '#d0021b' } : null
+class SelectedLanguage extends React.Component {
+
+    selectedLanguageStyle = (language) => {
+        return language === this.props.selectedLanguage ? { color: '#d0021b' } : null
+    }
+
+    render() {
+        console.log('Render SelectedLanguage');
+        const languages = ['All', 'Java Script', 'Ruby', 'Java', 'CSS', 'Python'];
+
+        return (            
+            <div>Popular
+                <ul className='languages'>
+                    { 
+                        languages.map(l => {
+                            return (
+                                <li 
+                                    style={ this.selectedLanguageStyle(l) }
+                                    onClick={ (event) => this.props.onLanguageClick(event, l) }
+                                    key={l}>
+                                    {l}
+                                </li>
+                            )
+                        }) 
+                    }
+                </ul>
+            </div>
+        )
+    }
 }
 
-// Stateless functional component Instead of React Component
-const SelectedLanguage = (props) => {
-    console.log('Render SelectedLanguage');
-    const languages = ['All', 'Java Script', 'Ruby', 'Java', 'CSS', 'Python'];
-    return (            
-        <div>Popular
-            <ul className='languages'>
-                { 
-                    languages.map(l => {
-                        return (
-                            <li 
-                                style={ selectedLanguageStyle(l, props.selectedLanguage) }
-                                onClick={ (event) => props.onLanguageClick(event, l) }
-                                key={l}>
-                                {l}
-                            </li>
-                        )
-                    }) 
-                }
-            </ul>
-        </div>
-    )
+SelectedLanguage.propTypes = {
+    selectedLanguage: PropTypes.string.isRequired,
+    onLanguageClick: PropTypes.func.isRequired,
 }
 
 class Popular extends React.Component {
