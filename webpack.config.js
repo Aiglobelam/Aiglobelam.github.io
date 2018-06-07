@@ -13,7 +13,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
    // 1) Where are the starting point of your application / root JavaScript file.
-   entry: ['./app/index.js',],
+   entry: ['./src/index.js',],
    module: {
       rules: [
           // Execure babel-loader on all *.js files
@@ -31,7 +31,7 @@ module.exports = {
    // 3) Where to place the transformed code.
    output: {
        // __dirname => the name of the directory that the code currently recidees in.
-      path: path.resolve(__dirname, 'dist'),
+      path: path.resolve(__dirname, 'build/prod'),
       // filename => Name of file webpack should create, contains all transformed code
       filename: 'appIndexBundle.js',
    },
@@ -46,7 +46,7 @@ module.exports = {
          // Solution: nope issue in newest webpack, guess it will be solved later on.
          // https://github.com/jantimon/html-webpack-plugin/issues/895
          // "template" => 
-         template: 'app/index.html'
+         template: 'src/index.html'
       }),
    ],
    // 'development' => This will enable things like tooling for debugging and faster builds.
