@@ -1,10 +1,15 @@
 var React = require('react');
 var PropTypes = require('prop-types');
 
+var githubApi = require('../utils/githubApi');
+
 const selectedLanguageStyle = (language1, language2) => {
     return language1 === language2 ? { color: '#d0021b' } : null
 }
 
+//---------------------------------------
+// Private component => SelectedLanguage
+//---------------------------------------
 // Stateless functional component Instead of React Component
 const SelectedLanguage = (props) => {
     console.log('Render SelectedLanguage');
@@ -29,13 +34,51 @@ const SelectedLanguage = (props) => {
     )
 }
 
+
+//-------------------------------
+// Private component => RepoGrid
+//-------------------------------
+const RepoGrid = (props) => {
+    return (
+        <ul className='popular-list'>
+            {
+                props.repos ? 
+                    props.repos.map((repo, index) => {
+                        return (
+                            <li key={props.name} className='popular-list-item'>
+                                <div className='popular-list-item-rank' >#{index + 1}</div>
+                                <ul className='space-list-items'>
+                                    <li>
+                                        <img className='avatar' src={repo.owner.avatar_url} alt={'Avatar  ' + repo.owner.login} />
+                                    </li>
+                                    <li><a href={repo.html_url} target='_blank' >{repo.name}</a></li>
+                                    <li>@{repo.owner.login}</li>
+                                    <li>{repo.stargazers_count} stars</li>
+                                </ul>
+                            </li>
+                        );
+                    }) 
+                    : <p>LOADING...</p>
+            }
+        </ul>
+    );
+}
+
+RepoGrid.propTypes = {
+    repos: PropTypes.array.isRequired,
+}
+
+//-------------------------------
+// Main Component
+//-------------------------------
 class Popular extends React.Component {
 
     constructor (props) {
         // TODO: Why Super props? see learnings/constructorSuperProps.js
         super(props);
         this.state = {
-            selectedLanguage: 'All'
+            selectedLanguage: 'All',
+            repos: null,
         }
 
         // Concerning the "<li onClick={ this.updateLanguage }" below...
@@ -54,6 +97,26 @@ class Popular extends React.Component {
         // see configuration in package.json
     }
 
+    updatePopularRepos = (language) => {
+        console.log(`updatePopularRepos( ${language} )`);
+        githubApi.fetchPopularReposBasedOnLanguage(language)
+        .then(popRepos => {
+            this.setState(
+                (prevState, props) => {
+                    console.log('setting state repos: ', popRepos);
+                    return {
+                        repos: popRepos,
+                    }
+                }
+            );
+        });
+    }
+
+    componentDidMount () {
+        console.log('Component did mount');
+        // this.updatePopularRepos(this.state.selectedLanguage);
+    }
+
     // Arrow functions can be used here, when defining a function, thanx to prposal "Class field declaration for JS"
     // https://github.com/tc39/proposal-class-fields
     // By using that propsal, we can use arrow functions which in turns let us use
@@ -64,11 +127,14 @@ class Popular extends React.Component {
         // https://reactjs.org/docs/react-component.html#setstate
         // one may optionally pass an object as the first argument to setState() instead of a function:
         this.setState((prevState, props) => {
-            console.log('setting state');
+            console.log('setting state selectedLanguage: ', language);
             return { 
-                selectedLanguage: language 
+                selectedLanguage: language,
+                repos: null,
             }
         });
+
+        this.updatePopularRepos(language);
     }
 
     // But how to pass parameters to our "updateLanguage" using onClick???
@@ -92,9 +158,10 @@ class Popular extends React.Component {
         return (            
             <div>
                 <SelectedLanguage 
-                    selectedLanguage={this.state.selectedLanguage} 
+                    selectedLanguage={ this.state.selectedLanguage } 
                     onLanguageClick={ this.updateLanguage }    
                 />
+                <RepoGrid repos={this.state.repos} />
             </div>
         )
     }
