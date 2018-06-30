@@ -34,6 +34,16 @@ module.exports = {
       path: path.resolve(__dirname, 'build/prod'),
       // filename => Name of file webpack should create, contains all transformed code
       filename: 'appIndexBundle.js',
+      // Sets basepath for all of our assets!?
+      // This was added to get page reload requests to paths like /popular to not be  "Cannot GET /popular'. 
+      // This is used in conjunction with the "devServer historyApiFallback: true,"
+      publicPath: '/',
+   },
+   devServer: {
+       // Whenever our app see url like '/popular', instead of invoking assets at "slash popular"
+       // It will redirect to root path that we set in output.publicPath = '/'
+       // React Router will notice this, and load the Route for "/popular"
+       historyApiFallback: true,
    },
    plugins: [
       // Use our ordinary app/index.html file as a "template" for HtmlWebpackPlugin
