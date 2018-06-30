@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- This is the "template" file -->
+  <!-- Used by HtmlWebpackPlugin that is configured in webpack.config.js -->
+  <!-- HtmlWebpackPlugin inject the built JS code into this template. -->
+  <!-- Note the div with id="appXXX" -->
+  <meta charset="UTF-8">
+  <title>My App Title</title>
+  
+</head>
+<body>
+  <div id="appXXX"></div>
+  <!-- Somewhere around here HtmlWebpackPlugin will place its built bundles... -->
+  <!-- The built code bundles are loaded in like a ordinary <script> tag  -->
+  <!-- In this case the built code will hook into  <div id="appXXX"></div> to place the react code -->
+<script type="text/javascript" src="/build/githubio/appIndexBundle.js"></script></body>
+</html>
