@@ -1,5 +1,8 @@
 * See code live at: https://aiglobelam.github.io/
 
+## During development, test code using webpack dev server
+1) `npm run dev`
+
 ## Test built code for github.io locally
 Start a webserver serving built code to see if the built code works
 1) `npm run build:githubio` puts code in to `build/githubio` folder 
