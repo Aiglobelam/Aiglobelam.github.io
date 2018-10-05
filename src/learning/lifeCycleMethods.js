@@ -14,11 +14,13 @@
 // Life cycle method: MOUNT
 //- - - - - - - - - - - - - -
 
-// * componentWillMount — please use componentDidMount instead
-componentDidMount(){
+// * componentWillMount — please use componentDidMount instead, 
+// A thing to notice is that componentWillMount is invoked both on serverside and clientside
+componentDidMount() {
     // Invoked once the component is mounted to the DOM
+    // It is only invoked on client side, not server side.
     // Good for making AJAX requests
-  }
+}
 
 //- - - - - - - - - - - - - - -
 // Life cycle method: UNMOUNT
@@ -34,7 +36,7 @@ componentWillUnmount(){
 //- - - - - - - - - 
 
 // ========>
-// ========> getDerivedStateFromProps
+// ========> componentWillReceiveProps REPLACED BY getDerivedStateFromProps
 // ========>
 
 // This STATIC method gets called whenever the component in question receives new data from its parent.
@@ -69,3 +71,6 @@ static getDerivedStateFromProps(nextProps, prevState) {
 // ========>
 // ========> componentDidUpdate
 // ========>
+
+// - Not invoked on the initial render
+// - Will not be invoked if shouldComponentUpdate() returns false.
