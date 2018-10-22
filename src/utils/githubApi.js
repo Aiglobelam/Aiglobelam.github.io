@@ -77,7 +77,7 @@ module.exports = {
     },
 
     fetchPopularReposBasedOnLanguage: (programmingLanguage) => {
-        const uri = `${BASE_URL}search/repositories?q=stars:>1+language:${programmingLanguage}&sort=stars&order=desc&ytpe=Repositories`;
+        const uri = `${BASE_URL}/search/repositories?q=stars:>1+language:${programmingLanguage}&sort=stars&order=desc&ytpe=Repositories`;
         console.log('GETURI: ', uri);
         const encodedUri = window.encodeURI(uri);
         return axios.get(encodedUri)

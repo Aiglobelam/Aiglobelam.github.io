@@ -1,6 +1,6 @@
 var React = require('react');
 var PropTypes = require('prop-types');
-
+var Loading = require('./Loading');
 var githubApi = require('../utils/githubApi');
 
 const selectedLanguageStyle = (language1, language2) => {
@@ -34,11 +34,14 @@ const SelectedLanguage = (props) => {
     )
 }
 
-
 //-------------------------------
 // Private component => RepoGrid
 //-------------------------------
 const RepoGrid = (props) => {
+
+    const reposWasPassedIn = props.repos ? true : false;
+    const loadingText = reposWasPassedIn ? 'RepoGrid Loading' : 'Choose language above';
+
     return (
         <ul className='popular-list'>
             {
@@ -58,7 +61,7 @@ const RepoGrid = (props) => {
                             </li>
                         );
                     }) 
-                    : <p>LOADING...</p>
+                    : <Loading text={loadingText} />
             }
         </ul>
     );

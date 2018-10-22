@@ -60,5 +60,6 @@ module.exports = {
       }),
    ],
    // 'development' => This will enable things like tooling for debugging and faster builds.
-   mode: 'development'
+   // As of writing process.env.NODE_ENV is set in package.json build scripts
+   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development'
 }

@@ -5,9 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "test",
-    "build:prod": "webpack --config webpack.config.js",
-    "build:github.io": "webpack --config webpack.config.github.io.js",
-    "dev": "webpack-dev-server --open --config webpack.config.js"
+    "build:prod": "NODE_ENV='production'  webpack --config webpack.config.js",
+    "build:github.io": "NODE_ENV='production' webpack --config webpack.config.github.io.js",
+    "buildForWindows:github.io": "SET NODE_ENV='production' webpack --config webpack.config.github.io.js",
+    "dev": "webpack-dev-server --open --config webpack.config.js",
+    "firebase-init": "firebase login && firebase init",
+    "firebase-deploy": "npm run build:prod && firebase deploy",
+    "firebase": "something doesnt work checkout https://learn.tylermcginnis.com/courses/50507/lectures/2466854"
   },
   "babel": {
     "presets": [
@@ -45,6 +49,7 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "css-loader": "^0.28.10",
+    "firebase-tools": "^5.1.1",
     "html-webpack-plugin": "^3.0.6",
     "style-loader": "^0.20.3",
     "webpack": "^4.14.0",
