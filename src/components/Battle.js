@@ -1,5 +1,4 @@
 var React = require('react');
-var PropTypes = require('prop-types');
 var PlayerInput = require('./PlayerInput.js');
 var PlayerPreview = require('./PlayerPreview.js');
 var Link = require('react-router-dom').Link;
@@ -62,14 +61,18 @@ class Battle extends React.Component {
                         <PlayerInput id='playerOne' label='Player One' onSubmit={this.handleSubmit} /> 
                     }
                     { playerOneImage !== null && 
-                        <PlayerPreview avatar={playerOneImage} username={playerOneName} onReset={this.handleReset} id={'playerOne'} /> 
+                        <PlayerPreview avatar={playerOneImage} username={playerOneName} >
+                            <button className='reset'onClick={() => this.handleReset('playerOne')}> reset p1</button>
+                        </PlayerPreview> 
                     }
 
                     { !playerTwoName && 
                         <PlayerInput id='playerTwo' label='Player Two' onSubmit={this.handleSubmit} /> 
                     }
                     { playerTwoImage !== null && 
-                        <PlayerPreview avatar={playerTwoImage} username={playerTwoName} onReset={this.handleReset} id={'playerTwo'} /> 
+                        <PlayerPreview avatar={playerTwoImage} username={playerTwoName} >
+                            <button className='reset'onClick={() => this.handleReset('playerTwo')}> reset p2</button>
+                        </PlayerPreview> 
                     }
                 </div>
                 { this.renderBattleButton() }

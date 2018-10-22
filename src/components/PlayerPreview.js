@@ -15,8 +15,8 @@ function PlayerPreview (props) {
                 alt={'Avatar for' + username}
             />
             <h2 className='username'>@{username}</h2>
-            </div> 
-            <button className='reset'onClick={() => props.onReset(id)}> reset</button>
+            </div>
+            {props.children}
         </div>
     )
 }
@@ -31,8 +31,6 @@ function PlayerPreview (props) {
 PlayerPreview.propTypes = {
     avatar: PropTypes.string.isRequired,
     username: PropTypes.string.isRequired,
-    id: PropTypes.string.isRequired,
-    onReset: PropTypes.func.isRequired,
 }
 
 module.exports = PlayerPreview;
