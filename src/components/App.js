@@ -34,6 +34,8 @@ class App extends React.Component {
                         TODO: try to remove exact path now when I have 2 routes starting with "battle"
                         Then you will currently see that path battle matches when going to "/battle/results"
                         or it actually seems to take over all maybe battle/results is not even used.
+
+                        Seems like first matching route will only render not both as Tyler says?
                     */ }
                     <Switch>
                         <Route exact path='/' component={Home} />

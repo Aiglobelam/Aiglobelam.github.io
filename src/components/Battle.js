@@ -4,7 +4,6 @@ var PlayerInput = require('./PlayerInput.js');
 var PlayerPreview = require('./PlayerPreview.js');
 var Link = require('react-router-dom').Link;
 
-
 class Battle extends React.Component {
 
     constructor (props) {
@@ -35,46 +34,8 @@ class Battle extends React.Component {
             return newState; // What is returned from setState function is merged with old state
         });
     }
-    
-    renderPlayerOne = () => {
-        return !this.state.playerOneName && 
-            <PlayerInput 
-                id='playerOne'
-                label='Player One'
-                onSubmit={this.handleSubmit}
-            />;
-    }
 
-    renderPlayerTwo = () => {
-        return !this.state.playerTwoName && 
-            <PlayerInput 
-                id='playerTwo'
-                label='Player Two'
-                onSubmit={this.handleSubmit}
-            />;
-    }
-
-    renderPlayerOnePreview = () => {
-        return this.state.playerOneImage !== null && 
-            <PlayerPreview
-                avatar={this.state.playerOneImage}
-                username={this.state.playerOneName}
-                onReset={this.handleReset}
-                id={'playerOne'}
-            />
-    };
-
-    renderPlayerTwoPreview = () => {
-        return this.state.playerTwoImage !== null && 
-            <PlayerPreview
-                avatar={this.state.playerTwoImage}
-                username={this.state.playerTwoName}
-                onReset={this.handleReset}
-                id={'playerTwo'}
-            />
-    };
-
-    renderX = () => {
+    renderBattleButton = () => {
         const { match } = this.props;
         const { playerOneImage, playerTwoImage, playerOneName, playerTwoName } = this.state;
 
@@ -90,15 +51,28 @@ class Battle extends React.Component {
     }
 
     render () {
+        const { playerOneImage, playerTwoImage, playerOneName, playerTwoName } = this.state;
+        console.log(playerOneName);
+
         return (
             <div>
                 <div className='row'>
-                    { this.renderPlayerOne() }
-                    { this.renderPlayerOnePreview() }
-                    { this.renderPlayerTwo() }
-                    { this.renderPlayerTwoPreview() }
+                    
+                    { !playerOneName && 
+                        <PlayerInput id='playerOne' label='Player One' onSubmit={this.handleSubmit} /> 
+                    }
+                    { playerOneImage !== null && 
+                        <PlayerPreview avatar={playerOneImage} username={playerOneName} onReset={this.handleReset} id={'playerOne'} /> 
+                    }
+
+                    { !playerTwoName && 
+                        <PlayerInput id='playerTwo' label='Player Two' onSubmit={this.handleSubmit} /> 
+                    }
+                    { playerTwoImage !== null && 
+                        <PlayerPreview avatar={playerTwoImage} username={playerTwoName} onReset={this.handleReset} id={'playerTwo'} /> 
+                    }
                 </div>
-                { this.renderX() }
+                { this.renderBattleButton() }
             </div>
         )
     }
