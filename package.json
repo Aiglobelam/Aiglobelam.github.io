@@ -13,20 +13,6 @@
     "firebase-deploy": "npm run build:prod && firebase deploy",
     "firebase": "something doesnt work checkout https://learn.tylermcginnis.com/courses/50507/lectures/2466854"
   },
-  "babel": {
-    "presets": [
-      "env",
-      "react"
-    ],
-    "plugins": [
-      [
-        "transform-class-properties",
-        {
-          "spec": true
-        }
-      ]
-    ]
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Aiglobelam/Aiglobelam.github.io.git"
@@ -43,18 +29,20 @@
   },
   "homepage": "https://github.com/Aiglobelam/Aiglobelam.github.io#readme",
   "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.4",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-react": "^6.24.1",
-    "css-loader": "^0.28.10",
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/polyfill": "^7.0.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.4",
+    "css-loader": "^1.0.0",
     "firebase-tools": "^5.1.1",
     "html-webpack-plugin": "^3.0.6",
-    "style-loader": "^0.20.3",
-    "webpack": "^4.14.0",
-    "webpack-cli": "^3.0.8",
-    "webpack-dev-server": "^3.1.4"
+    "style-loader": "^0.23.1",
+    "webpack": "^4.23.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.10",
+    "webpack-merge": "^4.1.4"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -62,7 +50,6 @@
     "query-string": "^6.2.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "react-router-dom": "^4.3.1",
-    "webpack-merge": "^4.1.3"
+    "react-router-dom": "^4.3.1"
   }
 }

@@ -11,11 +11,8 @@ const params = ``;
 function getProfile (username) {
     //const uri = `${BASE_URL}/users/${username}/${params}`;
     const uri = `${BASE_URL}/users/${username}`;
-    console.log('GET PROFILE URI: ', uri);
-    return axios.get(uri)
-        .then((userResponse) => {
-            return userResponse.data;
-        });
+    console.log('getProfile: ', uri);
+    return axios.get(uri).then(({ data }) => data);
 }
 
 // List public repositories for the specified user.
@@ -23,24 +20,18 @@ function getProfile (username) {
 function getRepos (username) {
     // const uri = `${BASE_URL}/users/${username}/repos?${params}&per_page=100`;
     const uri = `${BASE_URL}/users/${username}/repos`;
-    console.log('List public repositories for the specified user: GET /users/:username/repos: ', uri);
-    return axios.get(uri)
-        .then(userResponseRepos => {
-            return userResponseRepos.data;
-        });
+    console.log('getRepos: ', uri);
+    return axios.get(uri).then(({ data }) => data);
 }
 
 function getStarCount (repos) {
     const counterInitialValue = 0;
-    return repos.reduce((counter, repo) => {
-        return counter + repo.stargazers_count;
-    }, counterInitialValue);
+    return repos.reduce((counter, repo) => counter + repo.stargazers_count, counterInitialValue);
 }
 
 function calculateScore (profile, repos) {
     const { followers } = profile; 
-    const totalStars = getStarCount(repos);
-    return (followers * 3) + totalStars;
+    return (followers * 3) + getStarCount(repos);
 }
 
 function handleError (error) {
@@ -49,7 +40,7 @@ function handleError (error) {
 }
 
 function getUserData(player) {
-    return axios.all([getProfile(player), getRepos(player)])
+    return Promise.all([getProfile(player), getRepos(player)])
     .then(response => {
         const profile = response[0];
         const repos = response[1];
@@ -61,9 +52,7 @@ function getUserData(player) {
 }
 
 function sortPlayers(players) {
-    return players.sort((a,b) => {
-        return b.score - a.score;
-    })
+    return players.sort((a,b) => b.score - a.score)
 }
 
 // This is not an ES6 export!
@@ -80,9 +69,6 @@ module.exports = {
         const uri = `${BASE_URL}/search/repositories?q=stars:>1+language:${programmingLanguage}&sort=stars&order=desc&ytpe=Repositories`;
         console.log('GETURI: ', uri);
         const encodedUri = window.encodeURI(uri);
-        return axios.get(encodedUri)
-        .then(resp => {
-            return resp.data.items;
-        });
+        return axios.get(encodedUri).then(resp => resp.data.items);
     }
 }
