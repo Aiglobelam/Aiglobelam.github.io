@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 
 const BASE_URL = 'https://api.github.com';
 
@@ -55,20 +55,16 @@ function sortPlayers(players) {
     return players.sort((a,b) => b.score - a.score)
 }
 
-// This is not an ES6 export!
-module.exports = {
-    
-    battle: function (players) {
-        const userDataPromises = players.map(getUserData); // Apply function getUserData to all players. map gives back an array, of promises
-        return axios.all(userDataPromises)
-        .then(sortPlayers)
-        .catch(handleError);
-    },
+export function battle(players) {
+    const userDataPromises = players.map(getUserData); // Apply function getUserData to all players. map gives back an array, of promises
+    return axios.all(userDataPromises)
+    .then(sortPlayers)
+    .catch(handleError);
+};
 
-    fetchPopularReposBasedOnLanguage: (programmingLanguage) => {
-        const uri = `${BASE_URL}/search/repositories?q=stars:>1+language:${programmingLanguage}&sort=stars&order=desc&ytpe=Repositories`;
-        console.log('GETURI: ', uri);
-        const encodedUri = window.encodeURI(uri);
-        return axios.get(encodedUri).then(resp => resp.data.items);
-    }
-}
+export const fetchPopularReposBasedOnLanguage = (programmingLanguage) => {
+    const uri = `${BASE_URL}/search/repositories?q=stars:>1+language:${programmingLanguage}&sort=stars&order=desc&ytpe=Repositories`;
+    console.log('GETURI: ', uri);
+    const encodedUri = window.encodeURI(uri);
+    return axios.get(encodedUri).then(resp => resp.data.items);
+};

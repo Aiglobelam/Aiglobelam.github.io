@@ -10,12 +10,9 @@ class PlayerInput extends React.Component {
     }
 
     handleChange = (event) => {
-        var value = event.target.value; // Text typed in inputfield
-        this.setState(() => {
-            return {
-                username: value,
-            }
-        });
+        // We must capture the event into a variable, else the event in React will be gone
+        const value = event.target.value; // Text typed in inputfield
+        this.setState(() => ({username: value}));
     }
 
     handleSubmit = (event) => {
@@ -24,18 +21,22 @@ class PlayerInput extends React.Component {
     }
 
     render() {
+
+        const { username } = this.state;
+        const { label } = this.props;
+
         return (
           <form className='column' onSubmit={this.handleSubmit}>
-            <label className='header' htmlFor='username'>{this.props.label}</label>
+            <label className='header' htmlFor='username'>{label}</label>
             <input
               id='username'
               placeholder='github username'
               type='text'
-              value={this.state.username}
+              value={username}
               autoComplete='off'
               onChange={this.handleChange}
             />
-            <button className='button' type='submit' disabled={!this.state.username}>Submit</button>
+            <button className='button' type='submit' disabled={!username}>Submit</button>
           </form>
         )
       }

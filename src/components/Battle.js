@@ -1,7 +1,7 @@
-var React = require('react');
-var PlayerInput = require('./PlayerInput.js');
-var PlayerPreview = require('./PlayerPreview.js');
-var Link = require('react-router-dom').Link;
+import React from 'react';
+import PlayerInput from './PlayerInput.js';
+import PlayerPreview from './PlayerPreview.js';
+import { Link } from 'react-router-dom';
 
 class Battle extends React.Component {
 
@@ -18,19 +18,23 @@ class Battle extends React.Component {
     // Arrow functions binds "this", so we do not need to bind it in the constructor to this function
     handleSubmit = (id, username) => {
         this.setState(() => {
-            var newState = { };
-            newState[`${id}Name`] = username;
-            newState[`${id}Image`] = `https://github.com/${username}.png?size=200`;
-            return newState; // What is returned from setState function is merged with old state
+            // ES6 computed property name
+            // What is returned from setState function is merged with old state
+            return { 
+                [`${id}Name`]: username,
+                [`${id}Image`]: `https://github.com/${username}.png?size=200`
+            }
         });
     }
 
     handleReset = (id) => {
         this.setState(() => {
-            var newState = { };
-            newState[`${id}Name`] = '';
-            newState[`${id}Image`] = null;
-            return newState; // What is returned from setState function is merged with old state
+            return { 
+                // ES6 computed property name
+                // What is returned from setState function is merged with old state
+                [`${id}Name`]: '',
+                [`${id}Image`]: null
+            }
         });
     }
 
@@ -51,7 +55,6 @@ class Battle extends React.Component {
 
     render () {
         const { playerOneImage, playerTwoImage, playerOneName, playerTwoName } = this.state;
-        console.log(playerOneName);
 
         return (
             <div>
@@ -62,7 +65,7 @@ class Battle extends React.Component {
                     }
                     { playerOneImage !== null && 
                         <PlayerPreview avatar={playerOneImage} username={playerOneName} >
-                            <button className='reset'onClick={() => this.handleReset('playerOne')}> reset p1</button>
+                            <button className='reset' onClick={() => this.handleReset('playerOne')}> reset p1</button>
                         </PlayerPreview> 
                     }
 
@@ -71,7 +74,7 @@ class Battle extends React.Component {
                     }
                     { playerTwoImage !== null && 
                         <PlayerPreview avatar={playerTwoImage} username={playerTwoName} >
-                            <button className='reset'onClick={() => this.handleReset('playerTwo')}> reset p2</button>
+                            <button className='reset' onClick={() => this.handleReset('playerTwo')}> reset p2</button>
                         </PlayerPreview> 
                     }
                 </div>
@@ -81,4 +84,5 @@ class Battle extends React.Component {
     }
 }
 
-module.exports = Battle;
+// module.exports = Battle;
+export default Battle;

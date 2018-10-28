@@ -1,15 +1,15 @@
-var React = require('react');
-var PropTypes = require('prop-types');
+import React from 'react';
+import PropTypes from 'prop-types';
 
 const styles = {
     content: {
         textAlign: 'center',
         fontSize: '35px'
-    }        
+    }
 };
 
 class Loading extends React.Component {
-    
+
     constructor(props) {
         super(props);
         this.state = {
@@ -18,25 +18,16 @@ class Loading extends React.Component {
     }
 
     componentDidMount() {
-        var stopper = this.props.text + '...';
+        const { text, speed = 1000 } = this.props;
+        const stopper = text + '...';
+
         this.intervalId = setInterval(() => {
             // Return to orignal text when loading text ends with three dots ...
-            if (this.state.text === stopper) {
-                this.setState(() => {
-                    return {
-                        text: this.props.text,
-                    }
-                });
-            } 
-            // Add 1 dot to loading text
-            else {
-                this.setState((previousState) => {
-                    return {
-                        text: previousState.text + '.'
-                    }
-                });
-            }
-        }, 300);
+            console.log(`'is text: "${text}" === stopper: "${stopper}"`, text === stopper );
+            this.state.text === stopper 
+                ? this.setState(() => ({ text: this.props.text }))
+                : this.setState(previousState => ({ text: previousState.text + '.' }));
+        }, speed);
     }
 
     componentWillUnmount() {
@@ -47,7 +38,7 @@ class Loading extends React.Component {
     render() {
         return (
             <p style={styles.content}>
-                { this.state.text }
+                {this.state.text}
             </p>
         );
     }
@@ -60,4 +51,5 @@ Loading.defaultProps = {
     text: 'Loading',
 }
 
-module.exports = Loading;
+// module.exports = Loading;
+export default Loading;

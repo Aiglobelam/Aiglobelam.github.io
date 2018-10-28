@@ -1,15 +1,14 @@
-var React = require('react');
-
 /********************************************************************************
  * Link & NavLink: renders <a... tag 
  * Link: Absoulut fundamental we need to create an anchor tag <a href="">...</a> 
  * NavLink: Change style based on route, NavLink just wraps and ads some extra props to Link.
  **/
-var Link = require('react-router-dom').Link;
-var NavLink = require('react-router-dom').NavLink;
+import React from 'react';
+// Named imports syntax
+import { NavLink, Link } from 'react-router-dom'
 
 // Stateless functional component
-function Nav () {
+export default function Nav () {
     return (
         <ul className='nav'>
             {/* exact: only match on the exact route not as else that "/" will also match ex "/popular" */}
@@ -27,5 +26,4 @@ function Nav () {
 //         </ul>
 //     ); 
 // }
-
-module.exports = Nav;
+// module.exports = Nav;

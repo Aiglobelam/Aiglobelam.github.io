@@ -31,3 +31,8 @@ revealingModule.privateFunction("data"); // => NOT OK because it is not returned
 // * exports
 // * require
 
+//-----------
+// ES6
+//-----------
+// * export
+// * import

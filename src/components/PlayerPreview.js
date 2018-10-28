@@ -1,8 +1,9 @@
-var React = require('react');
-var PropTypes = require('prop-types');
+import React from 'react';
+import PropTypes from 'prop-types';
 
 // Stateless functional component
-function PlayerPreview (props) {
+// possible to do export default on stateless functional component in top
+export default function PlayerPreview (props) {
 
     const { avatar, username, id } = props;
 
@@ -33,4 +34,5 @@ PlayerPreview.propTypes = {
     username: PropTypes.string.isRequired,
 }
 
-module.exports = PlayerPreview;
+// module.exports = PlayerPreview;
+// export default PlayerPreview;

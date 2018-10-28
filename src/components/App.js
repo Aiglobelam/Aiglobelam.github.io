@@ -1,20 +1,17 @@
-var React = require('react');
-var Popular = require('./Popular');
-var ReactRouterDom = require('react-router-dom');
-var Router = ReactRouterDom.BrowserRouter;
-var Route = ReactRouterDom.Route;
-var Switch = ReactRouterDom.Switch;
+import React from 'react';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
-var Nav = require('./Nav');
-var Home = require('./Home');
-var Battle = require('./Battle');
-var Results = require('./Results');
+import Popular from './Popular';
+import Nav from './Nav';
+import Home from './Home';
+import Battle from './Battle';
+import Results from './Results';
 
 // state (not required)
 // lifecycle events (not reqquired)
 // UI (required)
 class App extends React.Component {
-    
+
     defaultRouteRender = () => <p>Route not found seru...</p>;
 
     //--------//
@@ -22,7 +19,7 @@ class App extends React.Component {
     //--------//
     render() {
         return (
-            <Router>
+            <BrowserRouter>
                 <div className='container'>
                     <Nav />
                     { /* 
@@ -45,10 +42,11 @@ class App extends React.Component {
                         <Route render={this.defaultRouteRender} />
                     </Switch>
                 </div>
-            </Router>
-            
+            </BrowserRouter>
+
         )
     }
 }
 
-module.exports = App;
+// module.exports = App;
+export default App;
