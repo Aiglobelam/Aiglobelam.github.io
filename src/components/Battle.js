@@ -5,14 +5,23 @@ import { Link } from 'react-router-dom';
 
 class Battle extends React.Component {
 
-    constructor (props) {
-        super(props);
-        this.state = {
-            playerOneName: '',
-            playerTwoName: '',
-            playerOneImage: null,
-            playerTwoImage: null,
-        };
+    // not needed due to '@babel/plugin-proposal-class-properties'
+    // constructor (props) {
+    //     super(props);
+    //     this.state = {
+    //         playerOneName: '',
+    //         playerTwoName: '',
+    //         playerOneImage: null,
+    //         playerTwoImage: null,
+    //     };
+    // }
+    
+     // made possible due to '@babel/plugin-proposal-class-properties'
+    state = {
+        playerOneName: '',
+        playerTwoName: '',
+        playerOneImage: null,
+        playerTwoImage: null,
     }
 
     // Arrow functions binds "this", so we do not need to bind it in the constructor to this function

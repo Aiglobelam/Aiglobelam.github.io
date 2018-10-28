@@ -29,6 +29,7 @@ export default function PlayerPreview (props) {
 // <button className='reset'onClick={() => props.onReset(id)}> reset</button>
 // That is we use arrow function () => props.onReset(id)
 
+
 PlayerPreview.propTypes = {
     avatar: PropTypes.string.isRequired,
     username: PropTypes.string.isRequired,

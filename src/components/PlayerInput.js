@@ -2,11 +2,31 @@ var React = require('react');
 var PropTypes = require('prop-types');
 
 class PlayerInput extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            username: '',
-        }
+
+    // made possible due to '@babel/plugin-proposal-class-properties'
+    // instead of doing it in the bottom PlayerInput.proptypes
+    static propTypes = {
+        id: PropTypes.string.isRequired,
+        label: PropTypes.string.isRequired,
+        onSubmit: PropTypes.func.isRequired
+    }
+
+    static defaultProps = {
+        label: 'Username',
+    }
+
+    // NOT NEEDED we can set the state as a property on the class it self
+    // seee '@babel/plugin-proposal-class-properties'
+    // constructor(props) {
+    //     super(props);
+    //     // this.state = {
+    //     //     username: '',
+    //     // }
+    // }
+
+    // made possible due to '@babel/plugin-proposal-class-properties'
+    state = {
+        username: '',
     }
 
     handleChange = (event) => {
@@ -42,10 +62,12 @@ class PlayerInput extends React.Component {
       }
 }
 
-PlayerInput.propTypes = {
-    id: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
-    onSubmit: PropTypes.func.isRequired,
-}
+// Can be moved inside class due to '@babel/plugin-proposal-class-properties'
+// PlayerInput.propTypes = {
+//     id: PropTypes.string.isRequired,
+//     label: PropTypes.string.isRequired,
+//     onSubmit: PropTypes.func.isRequired,
+// }
 
-module.exports = PlayerInput;
+// module.exports = PlayerInput;
+export default PlayerInput;

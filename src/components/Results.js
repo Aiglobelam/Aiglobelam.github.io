@@ -58,16 +58,24 @@ Player.propTypes = {
 
 class Results extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            winner: null,
-            loser: null,
-            error: null,
-            loading: true
-        }
+    // made possible due to '@babel/plugin-proposal-class-properties' state is moved down to own prop
+    // constructor(props) {
+    //     super(props);
+    //     this.state = {
+    //         winner: null,
+    //         loser: null,
+    //         error: null,
+    //         loading: true
+    //     }
+    // }
+    
+    // made possible due to '@babel/plugin-proposal-class-properties'
+    state = {
+        winner: null,
+        loser: null,
+        error: null,
+        loading: true
     }
-
     componentDidMount() {
         console.log('componentDidMount Results.js');
         const { location: { search } } = this.props;

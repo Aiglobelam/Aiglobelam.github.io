@@ -39,6 +39,9 @@ module.exports = {
                     loader: 'babel-loader',
                     options: {
                         presets: ['@babel/preset-env', '@babel/preset-react'],
+                        // https://babeljs.io/docs/plugins/transform-class-properties/
+                        // Use arrow notation on class fields (skipping bind this...)
+                        // Allow us to add specific properties to our components/classes
                         plugins: ['@babel/plugin-proposal-class-properties']
                     }
                 }
