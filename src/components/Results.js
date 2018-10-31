@@ -76,31 +76,53 @@ class Results extends React.Component {
         error: null,
         loading: true
     }
-    componentDidMount() {
-        console.log('componentDidMount Results.js');
+
+    // componentDidMount() {
+    //     console.log('componentDidMount Results.js');
+    //     const { location: { search } } = this.props;
+    //     const { playerOneName, playerTwoName } = queryString.parse(search);
+
+    //     console.log('this.props.location.search:', playerOneName, playerTwoName);
+
+    //     battle([playerOneName, playerTwoName])
+    //         .then(respPlayers => {
+
+    //             if (respPlayers == null) {
+    //                 return this.setState(() => ({
+    //                     error: 'hmm error does users exist in github?',
+    //                     loading: false,
+    //                 }));
+    //             }
+
+    //             this.setState(() => ({
+    //                 error: null,
+    //                 winner: respPlayers[0],
+    //                 loser: respPlayers[1],
+    //                 loading: false
+    //             }));
+
+    //         })
+    // }
+    async componentDidMount() {
+        console.log('async await componentDidMount Results.js');
         const { location: { search } } = this.props;
         const { playerOneName, playerTwoName } = queryString.parse(search);
 
-        console.log('this.props.location.search:', playerOneName, playerTwoName);
+        const respPlayers = await battle([playerOneName, playerTwoName]);
 
-        battle([playerOneName, playerTwoName])
-            .then(respPlayers => {
+        if (respPlayers == null) {
+            return this.setState(() => ({
+                error: 'hmm error does users exist in github?',
+                loading: false,
+            }));
+        }
 
-                if (respPlayers == null) {
-                    return this.setState(() => ({
-                        error: 'hmm error does users exist in github?',
-                        loading: false,
-                    }));
-                }
-
-                this.setState(() => ({
-                    error: null,
-                    winner: respPlayers[0],
-                    loser: respPlayers[1],
-                    loading: false
-                }));
-
-            })
+        this.setState(() => ({
+            error: null,
+            winner: respPlayers[0],
+            loser: respPlayers[1],
+            loading: false
+        }));
     }
 
     render() {

@@ -76,35 +76,28 @@ RepoGrid.propTypes = {
 //-------------------------------
 class Popular extends React.Component {
 
-    // constructor can be removed due to '@babel/plugin-proposal-class-properties' state is moved down to a class property
-    // constructor (props) {
-    //     // TODO: Why Super props? see learnings/constructorSuperProps.js
-    //     super(props);
-    //     this.state = {
-    //         selectedLanguage: 'All',
-    //         repos: null,
-    //     }
-        
-    //     // Concerning the "<li onClick={ this.updateLanguage }" below...
-    //     // Either bind "this" to the function that should be the onClick handler, 
-    //     // * here in the constructor
-    //     // LIKE => this.updateLanguage = this.updateLanguage.bind(this);
-    //     // Or use an "arrow function" in the onClick definition. (arrow funcitons auto bind this)
-    //     // <li onClick={ (event) => this.updateLanguage(event, l) }
-    //     // But that solution will create a "new function" every time render is invoked...
-    //     // A bit expensive if done often...
-    //     // Can cause problems if the arrow function you pass are passed into other React components
-    //     // https://reactarmory.com/answers/when-to-use-arrow-functions
-    //     // A third solution is to use arrow functions on "class fields" in a js class.
-    //     // But to use this we currently have to activate a babel plugin that activates this for us.
-    //     // https://babeljs.io/docs/plugins/transform-class-properties/
-    //     // see configuration in package.json
-    // }
-    
-    // made possible due to '@babel/plugin-proposal-class-properties'
-    state = {
-        selectedLanguage: 'All',
-        repos: null,
+    constructor (props) {
+        // TODO: Why Super props? see learnings/constructorSuperProps.js
+        super(props);
+        this.state = {
+            selectedLanguage: 'All',
+            repos: null,
+        }
+
+        // Concerning the "<li onClick={ this.updateLanguage }" below...
+        // Either bind "this" to the function that should be the onClick handler, 
+        // * here in the constructor
+        // LIKE => this.updateLanguage = this.updateLanguage.bind(this);
+        // Or use an "arrow function" in the onClick definition. (arrow funcitons auto bind this)
+        // <li onClick={ (event) => this.updateLanguage(event, l) }
+        // But that solution will create a "new function" every time render is invoked...
+        // A bit expensive if done often...
+        // Can cause problems if the arrow function you pass are passed into other React components
+        // https://reactarmory.com/answers/when-to-use-arrow-functions
+        // A third solution is to use arrow functions on "class fields" in a js class.
+        // But to use this we currently have to activate a babel plugin that activates this for us.
+        // https://babeljs.io/docs/plugins/transform-class-properties/
+        // see configuration in package.json
     }
 
     updatePopularRepos = (language) => {
