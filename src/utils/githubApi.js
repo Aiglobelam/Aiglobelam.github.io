@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 const BASE_URL = 'https://api.github.com';
 
 // tODO if I get rate limited get hold of these tokens from github.
@@ -16,18 +14,23 @@ const params = ``;
 // }
 async function getProfile (username) {
     const uri = `${BASE_URL}/users/${username}`;
-    console.log('async await getProfile: ', uri);
-    const profile = await axios.get(uri);
-    return profile.data;
+    console.log('nativeOrPollyfilled fetch and  async await getProfile: ', uri);
+    const response = await fetch(uri);
+    //.json() is an async function so we need to await it
+    const responseAsJson = await response.json();
+    console.log('getProfile responseAsJson.data', responseAsJson.data);
+    return responseAsJson;
 }
 
 // List public repositories for the specified user.
 // GET /users/:username/repos
-function getRepos (username) {
+async function getRepos (username) {
     // const uri = `${BASE_URL}/users/${username}/repos?${params}&per_page=100`;
     const uri = `${BASE_URL}/users/${username}/repos`;
-    console.log('getRepos: ', uri);
-    return axios.get(uri).then(({ data }) => data);
+    console.log('nativeOrPollyfilled fetch and async await => getRepos: ', uri);
+    const resp = await fetch(uri).then(({ data }) => data);
+    // resp.json() returns a Promise
+    return resp.json();
 }
 
 function getStarCount (repos) {
@@ -91,9 +94,17 @@ export async function battle(players) {
 //     return axios.get(encodedUri).then(resp => resp.data.items);
 // };
 export const fetchPopularReposBasedOnLanguage = async (programmingLanguage) => {
+    
     const uri = `${BASE_URL}/search/repositories?q=stars:>1+language:${programmingLanguage}&sort=stars&order=desc&ytpe=Repositories`;
-    console.log('async await fetchPopularReposBasedOnLanguage GETURI: ', uri);
+    
+    console.log('nativeOrPollyfilled fetch and async await fetchPopularReposBasedOnLanguage GETURI: ', uri);
+    
     const encodedUri = window.encodeURI(uri);
-    const githubResponse = await axios.get(encodedUri).catch(handleError);
-    return githubResponse.data.items;
+    
+    const githubResponse = await fetch(encodedUri).catch(handleError);
+
+    // .json() is async so lets await it
+    const popRepoz = await githubResponse.json();
+
+    return popRepoz.items;
 };

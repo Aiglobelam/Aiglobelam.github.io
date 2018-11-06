@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Todos/Goals</title>
+        <!-- Adds global property called "Redux" -->
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/redux/3.7.2/redux.min.js'></script>
+    </head>
+    <body>
+        <div>
+            <h1>Todo List</h1>
+            <input id='todo' type='text' placeholder="Add Todo">
+            <button id='todoBtn'>Add Todo</button>
+            <ul id='todos'></ul>
+        </div>
+        <div>
+            <h1>Goals</h1>
+            <input id='goal' type='text' placeholder='Add Goal' />
+            <button id='goalBtn'>Add Goal</button>
+            <ul id='goals'></ul>
+        </div>
+        <script type="text/javascript">
+
+            //----------------
+            // "DOM" code =)
+            //----------------
+            function generateId () {
+                return Math.random().toString(36).substring(2) + (new Date()).getTime().toString(36);
+            }
+
+            const subscribeActionHandler = () => {
+                console.log('The new state is: ', store.getState());
+                const { goals, todos } = store.getState()
+                document.getElementById('goals').innerHTML = ''
+                document.getElementById('todos').innerHTML = ''
+                goals.forEach(addGoalToDOM)
+                todos.forEach(addTodoToDOM)
+            };
+            
+            function createRemoveButton(onClick) {
+                const removeBtn = document.createElement('button')
+                removeBtn.innerHTML = 'X'
+                removeBtn.addEventListener('click', onClick)
+                return removeBtn
+            }
+
+            function addTodoToDOM(todo) {
+                const node = document.createElement('li')
+                const text = document.createTextNode(todo.name)
+
+                const removeBtn = createRemoveButton(() => {
+                    // checkAndDispatch replaced by redux middleware
+                    //checkAndDispatch(store, removeTodoActionCreator(todo.id))
+                    store.dispatch(removeTodoActionCreator(todo.id))
+                })
+
+                node.appendChild(text)
+                node.appendChild(removeBtn)
+
+                node.style.textDecoration = todo.complete ? 'line-through' : 'none'
+                node.addEventListener('click', () => {
+                    // checkAndDispatch replaced by redux middleware
+                    //checkAndDispatch(store, toggleTodoActionCreator(todo.id))
+                    store.dispatch(toggleTodoActionCreator(todo.id))
+                })
+                document.getElementById('todos').appendChild(node)
+            }
+
+            function addGoalToDOM(goal) {
+                const node = document.createElement('li')
+                
+                const removeBtn = createRemoveButton(() => {
+                    // checkAndDispatch replaced by redux middleware
+                    // checkAndDispatch(store, removeGoalActionCreator(goal.id))
+                    store.dispatch(removeGoalActionCreator(goal.id))
+                })
+
+                const text = document.createTextNode(goal.name)
+                node.appendChild(text)
+                node.appendChild(removeBtn)
+                // Goal has no toggle yet
+                document.getElementById('goals').appendChild(node)
+            }
+
+            function addTodo() {
+                const input = document.getElementById('todo')
+                const name = input.value
+                input.value = ''
+                // checkAndDispatch replaced by redux middleware
+                // checkAndDispatch(store, addTodoActionCreator ({
+                //     id: generateId(),
+                //     name,
+                //     complete: false,
+                // }))
+                store.dispatch(addTodoActionCreator ({
+                    id: generateId(),
+                    name,
+                    complete: false,
+                }))
+            }
+
+            function addGoal() {
+                const input = document.getElementById('goal')
+                const name = input.value
+                input.value = ''
+                // checkAndDispatch replaced by redux middleware
+                // checkAndDispatch(store, addGoalActionCreator({
+                //     id: generateId(),
+                //     name,
+                // }))
+                store.dispatch(addGoalActionCreator({
+                    id: generateId(),
+                    name,
+                }))
+            }
+
+            document.getElementById('todoBtn').addEventListener('click', addTodo)
+            document.getElementById('goalBtn').addEventListener('click', addGoal)
+
+            //---------------------------------------------------
+            // LIBRARY CODE
+            // * Our own little easy implementaion of Redux...
+            //---------------------------------------------------
+            function createStore(reducer) {
+
+                //----------
+                // The state
+                let state;
+
+                //----------
+                // Get state
+                const getState = () => state;
+
+                //------------------------
+                // Listen to state changes
+                let listeners = [];
+                const unsubscribe = listenerPassedIn => {
+                    return () => {
+                        listeners = listeners.filter((l) => l !== listenerPassedIn);
+                    }
+                }
+
+                const subscribe = listener => {
+                    listeners.push(listener);
+                    // When user subscribes give it back the possibillity to unsubscribe
+                    return unsubscribe(listener);
+                }
+
+                // responsible for updating the state / change the state
+                const dispatch = action => {
+                    // call our todos function
+                    console.log('dispatch calling todos');
+                    state = reducer(state, action);
+                    // inform listeners that state has changed
+                    console.log('dispatch calling each listener', listeners);
+                    listeners.forEach(l => l()); // That is invoke each listener function
+                }
+
+                // API
+                return {
+                    getState,
+                    subscribe,
+                    dispatch,
+                }
+            }
+
+            //-----------------
+            // APPLICATION CODE below...
+            //-----------------
+            const ADD_TODO = 'ADD_TODO'
+            const REMOVE_TODO = 'REMOVE_TODO'
+            const TOGGLE_TODO = 'TOGGLE_TODO'
+            const ADD_GOAL = 'ADD_GOAL'
+            const REMOVE_GOAL = 'REMOVE_GOAL'
+
+            //----------------
+            // ACTION CREATORS
+            //----------------
+            const addTodoActionCreator = todo => {
+                return {
+                    type: ADD_TODO,
+                    todo,
+                }
+            };
+
+            const removeTodoActionCreator = id => {
+                return {
+                    type: REMOVE_TODO,
+                    id,
+                }
+            }
+
+            const toggleTodoActionCreator = id => {
+                return {
+                    type: TOGGLE_TODO,
+                    id,
+                }
+            }
+
+            const addGoalActionCreator = goal => {
+                return {
+                    type: ADD_GOAL,
+                    goal,
+                }
+            }
+
+            const removeGoalActionCreator = id => {
+                return {
+                    type: REMOVE_GOAL,
+                    id,
+                }
+            }
+
+            // This can be done with a MIDDLEWARE instead, se below => checker(store)
+            // That is a third party extension point BETWEEN dispatching an action and the moment it reaches the reducer
+            // function checkAndDispatch(store, action) {
+            //     if (
+            //         action.type === ADD_TODO &&
+            //         action.todo.name.toLowerCase().indexOf('bitcoin') !== -1
+            //     ) {
+            //         return alert("Nope. That's a bad idea.")
+            //     }
+            //     if (
+            //         action.type === ADD_GOAL &&
+            //         action.goal.name.toLowerCase().indexOf('bitcoin') !== -1
+            //     ) {
+            //         return alert("Nope. That's a bad idea.")
+            //     }
+            //     return store.dispatch(action)
+            // }
+
+            // ES5 way
+            function checker(store) {
+                console.log('checker es5 way');
+                // Currying
+                return function (next) { // next is the next middleware in the chain OR dispatch (if no more middlewares), dispatch will then call the reducer
+                    return function (action) {
+                        // Here is the middleware code
+                        if (action.type === ADD_TODO && action.todo.name.toLowerCase().indexOf('bitcoin') !== -1) {
+                            return alert("Nope. That's a bad idea.")
+                        }
+                        if (action.type === ADD_GOAL && action.goal.name.toLowerCase().indexOf('bitcoin') !== -1) {
+                            return alert("Nope. That's a bad idea.")
+                        }
+                        //return store.dispatch(action)
+                        return next(action); // There might be a "next" middlware that we need to call after our own middleware
+                    }
+                }
+            }
+
+            // ES6 way currying
+            const checkerES6 = (store) => (next) => (action) => {
+                console.log('checkerES6');
+                // Here is the middleware code
+                if (action.type === ADD_TODO && action.todo.name.toLowerCase().indexOf('bitcoin') !== -1) {
+                    return alert("Nope. That's a bad idea.")
+                }
+                if (action.type === ADD_GOAL && action.goal.name.toLowerCase().indexOf('bitcoin') !== -1) {
+                    return alert("Nope. That's a bad idea.")
+                }
+                //return store.dispatch(action)
+                return next(action); // There might be a "next" middlware that we need to call after our own middleware
+            }
+
+            //------------------------------
+            // Update state => "The Reducer"
+            //------------------------------
+            // "PURE" FUNCTIONS
+            // - return same result given same arguments. 
+            // - execution doesn't depend on the state of the application.
+            // - don't modify the variables outside of their scope.
+            // THE REDUCER
+            // - Updates current state based on action, 
+            // - The "reducer function" sets default state
+            // - Does not modify the state, it actually returns a totally NEW state object (there for fullfilling PURE...)
+            function todosReducer(currentState = [], action) {
+                switch (action.type) {
+                    case ADD_TODO:
+                        return currentState.concat([action.todo])
+                    case REMOVE_TODO:
+                        return currentState.filter((todo) => todo.id !== action.id)
+                    case TOGGLE_TODO:
+                        return currentState.map((todo) => todo.id !== action.id ? todo :
+                            Object.assign({}, todo, { complete: !todo.complete })
+                        )
+                    default:
+                        return currentState
+                }
+            };
+
+            function goalsReducer(currentState = [], action) {
+                switch (action.type) {
+                    case ADD_GOAL:
+                        return currentState.concat([action.goal])
+                    case REMOVE_GOAL:
+                        return currentState.filter((goal) => goal.id !== action.id)
+                    default:
+                        return currentState
+                }
+            };
+
+            //--------------------
+            // Reducer composition
+            //--------------------
+            // Pass in what is returned from this function as a "reducer" to the store
+            function combinedReducers(state = {}, action) {
+                // Observe that each reducer gets passed its own part of the state!!!
+                return {
+                    todos: todosReducer(state.todos, action),
+                    goals: goalsReducer(state.goals, action),
+                }
+            }
+
+            // The Redux way of combining Reducers
+            const combinedReducersRedux = Redux.combineReducers({ todos: todosReducer, goals: goalsReducer });
+
+            //-----------------------
+            // MIDDLEWARE REDUX SETUP
+            //-----------------------
+            const middlewaresForRedux = Redux.applyMiddleware(checkerES6);
+            //----------------
+            // IMPLEMENTATION
+            //----------------
+            // usage of store and actions ans reducers
+
+            // const store = createStore(combinedReducers)
+            // The Redux way of createStore
+            const store = Redux.createStore(combinedReducersRedux, middlewaresForRedux);
+
+
+            store.subscribe(subscribeActionHandler)
+
+        </script>
+    </body>
+</html>

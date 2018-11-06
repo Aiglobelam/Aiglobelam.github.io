@@ -13,19 +13,25 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     // 1) entyry: Where are the starting point of your application / root JavaScript file.
-    //    * @babel/polyfill: https://babeljs.io/docs/en/babel-polyfill
+    //    * @babel/polyfill:
+    //      https://babeljs.io/docs/en/babel-polyfill
     //      Can be used in webpack several diffrent ways. In our case we to not specift "useBuiltIns" any where...
     //      RULE: If useBuiltIns key is not specified or it is explicitly set with useBuiltIns: false
     //            in your .babelrc, add @babel/polyfill directly to the entry array in your webpack.config.js.
-    //      Which is what we do here.
-    //    * @babel/polyfill: Babel includes a polyfill that includes a custom regenerator runtime and
+    //            Which is what we do here.
+    //      @babel/polyfill: Babel includes a polyfill that includes a custom regenerator runtime and
     //      core-js. This will emulate a full ES2015+ environment (no < Stage 4 proposals) and is 
     //      intended to be used in an application rather than a library/tool. (this polyfill is 
     //      automatically loaded when using babel-node). This means you can use new built-ins like Promise
     //      or WeakMap, static methods like Array.from or Object.assign, instance methods like 
     //      Array.prototype.includes, and generator functions (provided you use the regenerator plugin)
     //      The polyfill adds to the global scope as well as native prototypes like String in order to do this.
-    entry: ['@babel/polyfill', './src/index.js'],
+    //    * whatwg-fetch
+    //      A Polyfill for fetch (which is a XMLHttpRequest killer) or a replacement for libraries such as Axios
+    //      It is pretty well supported in the browsers.
+    //      https://caniuse.com/#feat=fetch
+    //      Module: https://github.com/github/fetch
+    entry: ['@babel/polyfill', 'whatwg-fetch', './src/index.js'],
     module: {
         rules: [
             // Execure babel-loader on all *.js files
