@@ -14,11 +14,10 @@ const params = ``;
 // }
 async function getProfile (username) {
     const uri = `${BASE_URL}/users/${username}`;
-    console.log('nativeOrPollyfilled fetch and  async await getProfile: ', uri);
     const response = await fetch(uri);
     //.json() is an async function so we need to await it
     const responseAsJson = await response.json();
-    console.log('getProfile responseAsJson.data', responseAsJson.data);
+    console.log('getProfile responseAsJson', responseAsJson);
     return responseAsJson;
 }
 
@@ -27,8 +26,9 @@ async function getProfile (username) {
 async function getRepos (username) {
     // const uri = `${BASE_URL}/users/${username}/repos?${params}&per_page=100`;
     const uri = `${BASE_URL}/users/${username}/repos`;
-    console.log('nativeOrPollyfilled fetch and async await => getRepos: ', uri);
-    const resp = await fetch(uri).then(({ data }) => data);
+    console.log('getRepos uri', uri);
+    const resp = await fetch(uri);
+    console.log('getRepos resp', resp);
     // resp.json() returns a Promise
     return resp.json();
 }
@@ -60,8 +60,9 @@ function handleError (error) {
 //     });
 // }
 async function getUserData(player) {
-    console.log('async await getUserData');
+    console.log('getUserData', player);
     const [profile, repos] = await Promise.all([getProfile(player), getRepos(player)]);
+    console.log('getUserData', profile, repos);
     return {
         profile,
         score: calculateScore(profile, repos),
@@ -79,9 +80,11 @@ function sortPlayers(players) {
 //     .catch(handleError);
 // };
 export async function battle(players) {
-    console.log('async await battle(players)');
+    console.log('battle')
     const userDataPromises = players.map(getUserData); // Apply function getUserData to all players. map gives back an array, of promises
+    console.log('battle userDataPromises', userDataPromises);
     const results = await Promise.all(userDataPromises).catch(handleError);
+    console.log('battle', results);
     return results === null
         ? results
         : sortPlayers(results);
@@ -102,7 +105,6 @@ export const fetchPopularReposBasedOnLanguage = async (programmingLanguage) => {
     const encodedUri = window.encodeURI(uri);
     
     const githubResponse = await fetch(encodedUri).catch(handleError);
-
     // .json() is async so lets await it
     const popRepoz = await githubResponse.json();
 
