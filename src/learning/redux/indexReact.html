@@ -4,6 +4,11 @@
         <title>Todos/Goals</title>
         <!-- Adds global property called "Redux" -->
         <script src='https://cdnjs.cloudflare.com/ajax/libs/redux/3.7.2/redux.min.js'></script>
+        <!-- React and ReactDOM -->
+        <script src='https://unpkg.com/react@16.3.0-alpha.1/umd/react.development.js'></script>
+        <script src='https://unpkg.com/react-dom@16.3.0-alpha.1/umd/react-dom.development.js'></script>
+        <!-- Transform our React JS to normal JS that the browser rendering this page can understand, we use this standalone babel =) which does this transform on the fly -->
+        <script src='https://unpkg.com/babel-standalone@6.15.0/babel.min.js'></script>
     </head>
     <body>
         <div>
@@ -18,6 +23,149 @@
             <button id='goalBtn'>Add Goal</button>
             <ul id='goals'></ul>
         </div>
+        <hr>
+        <div id="reactHookId"></div>
+        
+        <!-- This type on the JS tag, makes the babel thingy know what to transpile -->
+        <script type="text/babel">
+            //-----------
+            // REACT CODE
+            //-----------
+            class MyApp extends React.Component {
+                
+                componentDidMount() {
+                    const { store } = this.props;
+                    // We want to cause a re render if state has changed
+                    // Usually re render is done when calling react setState(...)
+                    // forceUpdate on every react component, causes a re render when invoked
+                    store.subscribe(() => {
+                        // console.group('MyApp');
+                        // console.log('Invoke this.forceUpdate due to the store has changed');
+                        // console.groupEnd();
+                        this.forceUpdate();
+                    });
+                }
+
+                render() {
+                    const { store } = this.props;
+                    const { todos, goals } = store.getState();
+
+                    return (
+                        <div>
+                           <Todos todos={todos} store={store}/>
+                           <Goals goals={goals} store={store}/>
+                        </div>
+                    );
+                }
+            }
+
+            class List extends React.Component {
+                render() {
+                    const { items, removeItem, toggleItem } = this.props;
+                    return (
+                        <ul>
+                            {
+                                items 
+                                    ? items.map(item => {
+                                        return <li key={item.id}>
+                                                <span
+                                                    onClick={() => toggleItem && toggleItem(item.id)}
+                                                    style={{textDecoration: item.complete ? 'line-through' : 'none'}}>
+                                                    {item.name}
+                                                </span>
+                                                <button onClick={() => removeItem(item)}>X</button>
+                                        </li>
+                                    }) 
+                                    : null
+                            }
+                        </ul>
+                    );
+                }
+            }
+        
+            class Todos extends React.Component {
+                
+                addItem = (theEvent) => {
+                    theEvent.preventDefault();
+                    const name = this.inputInstanceVar.value;
+                    this.inputInstanceVar.value = '';
+                    // If "store" is global available as of writing this will work
+                    // store.dispatch();
+                    // If not as in most other cases the "store" must somehow be passed to the React component Todos
+                    // Then it is used like this.
+                    this.props.store.dispatch(addTodoActionCreator({
+                        id: generateId(),
+                        name,
+                        complete: false,
+                    }));
+                }
+                removeItem = (todo) => {
+                    this.props.store.dispatch(removeTodoActionCreator(todo.id))
+                }
+                toggleItem = (id) => {
+                    this.props.store.dispatch(toggleTodoActionCreator(id))
+                }
+                render() {
+                    return (
+                        <div>
+                            <h1>Todo List (React version)</h1>
+                            { // WHY "refs" ???
+                              /****************************************************************************** 
+                               * Un controlled component
+                               * Instead of binding the input value in the form field to the state,
+                               * When user clicks commit, you "grab" value from the DOM and commit/set state
+                               */
+                            }
+                            <input 
+                                type='text'
+                                placeholder='Add Todo'
+                                ref={(inputX) => this.inputInstanceVar = inputX} />
+                                { /** notice that "this.inputInstanceVar" will become an instance variable of the Todos component */}
+                            <button onClick={this.addItem}>Add Todo Button</button>
+                            <List 
+                                items={this.props.todos}
+                                removeItem={this.removeItem}
+                                toggleItem={this.toggleItem}/>
+                        </div>
+                    );
+                }
+            }
+
+            class Goals extends React.Component {
+
+                addItem = (e) => {
+                    e.preventDefault()
+                    const name = this.input.value
+                    this.input.value = ''
+                    this.props.store.dispatch(addGoalActionCreator({
+                        id: generateId(),
+                        name,
+                    }))
+                }
+                
+                removeItem = (goal) => {
+                    this.props.store.dispatch(removeGoalActionCreator(goal.id))
+                }
+
+                render() {
+                    return (
+                        <div>
+                            <h1>Goals</h1>
+                            <input
+                                type='text'
+                                placeholder='Add Goal'
+                                ref={(input) => this.input = input}
+                            />
+                            <button onClick={this.addItem}>Add Goal</button>
+                            <List items={this.props.goals} removeItem={this.removeItem} />
+                        </div>
+                    );
+                }
+            }
+
+            ReactDOM.render(<MyApp store={store}/>, document.getElementById('reactHookId'));
+        </script>
+        
         <script type="text/javascript">
 
             //----------------
