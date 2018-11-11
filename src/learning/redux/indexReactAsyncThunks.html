@@ -92,7 +92,7 @@
                 addItem = (theEvent) => {
                     theEvent.preventDefault();
                     const name = this.inputInstanceVar.value;
-                    window.API.saveTodo(name)
+                    return window.API.saveTodo(name)
                         .then((savedTodo) => {
                             // If "store" is global available as of writing this will work
                             // store.dispatch();
@@ -107,17 +107,20 @@
                         })
                 }
                 removeItem = (todo) => {
-                    // Optimistically delete from state before delete in db using API
-                    // This will give a more instant feedback to user
-                    this.props.store.dispatch(removeTodoActionCreator(todo.id));
+                    // // Optimistically delete from state before delete in db using API
+                    // // This will give a more instant feedback to user
+                    // this.props.store.dispatch(removeTodoActionCreator(todo.id));
 
-                    window.API.deleteTodo(todo.id)
-                        .catch(() => {
-                            // Something went wrong we RE-ADD the todo once again to the state because is was not deleted from db..
-                            // Ideally insert at correct place... this will insert last in todo list.
-                            this.props.store.dispatch(addTodoActionCreator(todo));
-                            alert(`An error occured, could not delete "TODO", ${JSON.stringify(todo)}, so please try again`);
-                        });
+                    // window.API.deleteTodo(todo.id)
+                    //     .catch(() => {
+                    //         // Something went wrong we RE-ADD the todo once again to the state because is was not deleted from db..
+                    //         // Ideally insert at correct place... this will insert last in todo list.
+                    //         this.props.store.dispatch(addTodoActionCreator(todo));
+                    //         alert(`An error occured, could not delete "TODO", ${JSON.stringify(todo)}, so please try again`);
+                    //     });
+
+                    // Thunksifyed code, above code moved into handleDeleteTodoThunk
+                    this.props.store.dispatch(handleDeleteTodoThunk(todo));
                 }
                 toggleItem = (id) => {
                     this.props.store.dispatch(toggleTodoActionCreator(id));
@@ -157,26 +160,37 @@
             class Goals extends React.Component {
 
                 addItem = (e) => {
-                    e.preventDefault()
+                    e.preventDefault();
+
+                    // THIS CODE IS MOVED INTO handleAddGoalThunk
+                    // return window.API.saveGoal(name)
+                    //     .then((savedGoal) => {
+                    //         const { id, name } = savedGoal;
+                    //         this.props.store.dispatch(addGoalActionCreator({ id, name}));
+                    //         this.input.value = '';
+                    //     })
+                    //     .catch(e => {
+                    //         alert('there was an error addItem goal', e);
+                    //     })
+
                     const name = this.input.value
-                    window.API.saveGoal(name)
-                        .then((savedGoal) => {
-                            const { id, name } = savedGoal;
-                            this.props.store.dispatch(addGoalActionCreator({ id, name}));
-                            this.input.value = '';
-                        })
-                        .catch(e => {
-                            alert('there was an error addItem goal', e);
-                        })
+                    this.props.store.dispatch(
+                        handleAddGoalThunk(
+                            name, 
+                            () => { this.input.value ='' }    
+                        )
+                    );
                 }
                 
                 removeItem = (goal) => {
-                    this.props.store.dispatch(removeGoalActionCreator(goal.id))
-                    return window.API.deleteGoal(goal.id)
-                    .catch(() => {
-                        this.props.store.dispatch(addGoalActionCreator(goal));
-                        alert('could not delete goal try again...');
-                    })
+                    // this.props.store.dispatch(removeGoalActionCreator(goal.id))
+                    // return window.API.deleteGoal(goal.id)
+                    // .catch(() => {
+                    //     this.props.store.dispatch(addGoalActionCreator(goal));
+                    //     alert('could not delete goal try again...');
+                    // })
+                    this.props.store.dispatch(handleDeleteGoalThunk(goal));
+        
                 }
 
                 render() {
@@ -208,6 +222,7 @@
                 return Math.random().toString(36).substring(2) + (new Date()).getTime().toString(36);
             }
             
+            // Our own store inspired by Redux, kind of how it is implemented
             function createStore(reducer) {
 
                 //----------
@@ -306,6 +321,58 @@
                     goals,
                 }
             }
+            
+            //-------------------------
+            // ACTION CREATORS - THUNKS
+            //-------------------------
+            // A "thunk" do more than just create an action, it can call APIs and more
+            // we need access to the dispatch
+            const handleDeleteTodoThunk = (todo) => {
+                console.log('handleDeleteTodoThunk(...)');
+                // how can this work you might ask, the answer is our created thunkIfyMiddleware that knows what to do
+                // when an action creator returns a function.
+                return (dispatch) => {
+                    dispatch(removeTodoActionCreator(todo.id));
+                    return window.API.deleteTodo(todo.id)
+                        .catch(() => {
+                            // Something went wrong we RE-ADD the todo once again to the state because is was not deleted from db..
+                            // Ideally insert at correct place... this will insert last in todo list.
+                            dispatch(addTodoActionCreator(todo));
+                            alert(`An error occured, could not delete "TODO", ${JSON.stringify(todo)}, so please try again`);
+                        });
+
+                };
+            };
+
+            // A "thunk" do more than just create an action, it can call APIs and more
+            // we need access to the dispatch
+            const handleDeleteGoalThunk = (goal) => {
+                console.log('handleDeleteGoalThunk');
+                return (dispatch) => {
+                    dispatch(removeGoalActionCreator(goal.id))
+                    return window.API.deleteGoal(goal.id)
+                        .catch(() => {
+                            dispatch(addGoalActionCreator(goal));
+                            alert('could not delete goal try again...');
+                        })
+                }
+            }
+
+            const handleAddGoalThunk = (name, callBackFn) => {
+                console.log('handleAddGoalThunk');
+                return (dispatch) => {
+                    return window.API.saveGoal(name)
+                            .then((savedGoal) => {
+                                const { id, name } = savedGoal;
+                                dispatch(addGoalActionCreator({ id, name}));
+                                callBackFn();
+                            })
+                            .catch(e => {
+                                alert('there was an error addItem goal', e);
+                            })
+
+                }
+            }
             // This can be done with a MIDDLEWARE instead, se below => checker(store)
             // That is a third party extension point BETWEEN dispatching an action and the moment it reaches the reducer
             // function checkAndDispatch(store, action) {
@@ -327,6 +394,7 @@
             //------------
             // MIDDLEWARES
             //------------
+            // Middlewares allow us to hook into Redux lifecycle
             // ES5 way, redux middleware
             function checker(store) {
                 console.log('checker es5 way');
@@ -348,7 +416,7 @@
 
             // ES6 way currying, redux middleware
             const checkerES6ReduxMiddleware = (store) => (next) => (action) => {
-                console.log('checkerES6');
+                console.log('checkerES6 middleware');
                 // Here is the middleware code
                 if (action.type === ADD_TODO && action.todo.name.toLowerCase().indexOf('bitcoin') !== -1) {
                     return alert("Nope. That's a bad idea.")
@@ -373,6 +441,20 @@
                 console.log('The new state:', store.getState());
                 console.groupEnd();
                 return resultOfCallingNextWhichIsDispatchIfThisMiddleWareIsTheLastMiddleware;
+            }
+
+            const thunkIfyMiddleware = (store) => (next) => (action) => {
+                if (typeof action === 'function') {
+                    console.log('thunkIfyMiddleware detected that action creator returned a function... invoke that function passing it dispatch.');
+                    // The action created by the actionCreator was not an object it was a function!
+                    // There fore we now KNOW that we need to pass "dispatch" to that function (because we sat them rules...)
+                    return action(store.dispatch);
+                } 
+                // If this verry function "thunkIfyMiddleware" is the LAST MIDDLEWARE in 
+                // the middleware chain "next" is actually "dispatch" so dispatch(action) will be invoked
+                // If its not "next" is the next middleware in the chain of middlewares.
+                return next(action);
+                
             }
 
             //------------------------------
@@ -452,7 +534,7 @@
             //-----------------------
             // MIDDLEWARE REDUX SETUP
             //-----------------------
-            const middlewaresForRedux = Redux.applyMiddleware(checkerES6ReduxMiddleware, loggerReduxMiddleware);
+            const middlewaresForRedux = Redux.applyMiddleware(thunkIfyMiddleware ,checkerES6ReduxMiddleware, loggerReduxMiddleware);
             //----------------
             // IMPLEMENTATION
             //----------------
@@ -463,8 +545,6 @@
 
             // The Redux way of createStore
             const store = Redux.createStore(combinedReducersRedux, middlewaresForRedux);
-
-            store.subscribe(subscribeActionHandler)
 
         </script>
 
