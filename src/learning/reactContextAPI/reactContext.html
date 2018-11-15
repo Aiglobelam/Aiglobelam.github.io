@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Todos/Goals</title>
+        <!-- Adds global property called "Redux" -->
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/redux/3.7.2/redux.min.js'></script>
+        <!-- React and ReactDOM -->
+        <script src='https://unpkg.com/react@16.3.0-alpha.1/umd/react.development.js'></script>
+        <script src='https://unpkg.com/react-dom@16.3.0-alpha.1/umd/react-dom.development.js'></script>
+        <!-- Transform our React JS to normal JS that the browser rendering this page can understand, we use this standalone babel =) which does this transform on the fly -->
+        <script src='https://unpkg.com/babel-standalone@6.15.0/babel.min.js'></script>
+
+        <!-- Enables us to use a thunkifyer middleware to use instead of our own written middleware that we called "thunkIfyMiddleware"-->
+        <!-- See Redux.applyMiddleware(...) further below in code for when it is given to redux -->
+        <script src='https://unpkg.com/redux-thunk@2.2.0/dist/redux-thunk.min.js'></script>
+
+        <!-- Redux Promise - FSA-compliant promise middleware for Redux. https://github.com/redux-utilities/redux-promise-->
+        <!-- Redux Saga - An alternative side effect model for Redux apps https://github.com/redux-saga/redux-saga-->
+    </head>
+    <body>
+
+        <div id="reactHookId"></div>
+        
+        <!-- This type on the JS tag, makes the babel thingy know what to transpile -->
+        <script type="text/babel">
+            //-----------
+            // REACT CODE
+            //-----------
+            const Context = React.createContext();
+
+            class MyApp extends React.Component {
+                render() {
+                    const name = 'Jens Held';
+                    return (
+                        <Context.Provider value={name}>
+                            <Parent />
+                        </Context.Provider>    
+                    );
+                }
+            }
+
+            function Parent () {
+                return (
+                    <div>
+                        <h1>Parent</h1>
+                        <Child />
+                    </div>
+                );
+            }
+
+            function Child () {
+                return (
+                    <div>
+                        <h1>Child</h1>
+                        <GrandChild />
+                    </div>
+                );
+            }
+
+            function GrandChild ({name}) {
+                return (
+                    <Context.Consumer>
+                        {
+                            (nameFromContext) => (
+                                <div>
+                                    <h1>Child</h1>
+                                    <h3>Name: {nameFromContext}</h3>
+                                </div>
+                            )
+                        }
+                    </Context.Consumer>
+                );
+            }
+        
+            ReactDOM.render(<MyApp />, document.getElementById('reactHookId'));
+        </script>
+        
+    </body>
+</html>
