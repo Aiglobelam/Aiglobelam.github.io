@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Todos/Goals</title>
+        <!-- Adds global property called "Redux" -->
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/redux/3.7.2/redux.min.js'></script>
+        <!-- React and ReactDOM -->
+        <script src='https://unpkg.com/react@16.3.0-alpha.1/umd/react.development.js'></script>
+        <script src='https://unpkg.com/react-dom@16.3.0-alpha.1/umd/react-dom.development.js'></script>
+        <!-- Transform our React JS to normal JS that the browser rendering this page can understand, we use this standalone babel =) which does this transform on the fly -->
+        <script src='https://unpkg.com/babel-standalone@6.15.0/babel.min.js'></script>
+
+        <!-- Enables us to use a thunkifyer middleware to use instead of our own written middleware that we called "thunkIfyMiddleware"-->
+        <!-- See Redux.applyMiddleware(...) further below in code for when it is given to redux -->
+        <script src='https://unpkg.com/redux-thunk@2.2.0/dist/redux-thunk.min.js'></script>
+
+        <!-- Redux Promise - FSA-compliant promise middleware for Redux. https://github.com/redux-utilities/redux-promise-->
+        <!-- Redux Saga - An alternative side effect model for Redux apps https://github.com/redux-saga/redux-saga-->
+    </head>
+    <body>
+
+        <div id="reactHookId"></div>
+        
+        <!-- This type on the JS tag, makes the babel thingy know what to transpile -->
+        <script type="text/babel">
+            //-----------
+            // REACT CODE
+            //-----------
+            class MyApp extends React.Component {
+                
+                componentDidMount() {
+                    const { dispatch } = this.props;
+
+                    dispatch(handleLoadInitialDataLoadThunk());
+
+                    // We want to cause a re render if state has changed
+                    // Usually re render is done when calling react setState(...)
+                    // forceUpdate on every react component, causes a re render when invoked
+                    // store.subscribe(() => {
+                    //     // console.group('MyApp');
+                    //     // console.log('Invoke this.forceUpdate due to the store has changed');
+                    //     // console.groupEnd();
+                    //     this.forceUpdate();
+                    // });
+                }
+
+                render() {
+                    console.log('MyApp this.props', this.props);
+                    const { loading } = this.props;
+
+                    if(loading){
+                        return (<div><h3>Loading</h3></div>)
+                    }
+
+                    return (
+                        <div>
+                           <TodosConnected />
+                           <GoalsConnected />
+                        </div>
+                    );
+                }
+            }
+
+            class List extends React.Component {
+                render() {
+                    const { items, removeItem, toggleItem } = this.props;
+                    return (
+                        <ul>
+                            {
+                                items 
+                                    ? items.map(item => {
+                                        return <li key={item.id}>
+                                                <span
+                                                    onClick={() => toggleItem && toggleItem(item.id)}
+                                                    style={{textDecoration: item.complete ? 'line-through' : 'none'}}>
+                                                    {item.name}
+                                                </span>
+                                                <button onClick={() => removeItem(item)}>X</button>
+                                        </li>
+                                    }) 
+                                    : null
+                            }
+                        </ul>
+                    );
+                }
+            }
+        
+            class Todos extends React.Component {
+                
+                addItem = (theEvent) => {
+                    theEvent.preventDefault();
+                    const name = this.inputInstanceVar.value;
+                    const restoreInputField = () => this.inputInstanceVar.value = '';
+                    this.props.dispatch(handleAddTodoThunk(name, restoreInputField));
+                }
+                removeItem = (todo) => {
+                    // // Optimistically delete from state before delete in db using API
+                    // // This will give a more instant feedback to user
+                    // this.props.store.dispatch(removeTodoActionCreator(todo.id));
+
+                    // window.API.deleteTodo(todo.id)
+                    //     .catch(() => {
+                    //         // Something went wrong we RE-ADD the todo once again to the state because is was not deleted from db..
+                    //         // Ideally insert at correct place... this will insert last in todo list.
+                    //         this.props.store.dispatch(addTodoActionCreator(todo));
+                    //         alert(`An error occured, could not delete "TODO", ${JSON.stringify(todo)}, so please try again`);
+                    //     });
+
+                    // Thunksifyed code, above code moved into handleDeleteTodoThunk
+                    this.props.dispatch(handleDeleteTodoThunk(todo));
+                }
+                toggleItem = (id) => {
+                    this.props.dispatch(handleToggleTodoThunk(id));
+                }
+                render() {
+                    return (
+                        <div>
+                            <h1>Todo List (React version)</h1>
+                            { // WHY "refs" ???
+                              /****************************************************************************** 
+                               * Un controlled component
+                               * Instead of binding the input value in the form field to the state,
+                               * When user clicks commit, you "grab" value from the DOM and commit/set state
+                               */
+                            }
+                            <input 
+                                type='text'
+                                placeholder='Add Todo'
+                                ref={(inputX) => this.inputInstanceVar = inputX} />
+                                { /** notice that "this.inputInstanceVar" will become an instance variable of the Todos component */}
+                            <button onClick={this.addItem}>Add Todo Button</button>
+                            <List 
+                                items={this.props.todos}
+                                removeItem={this.removeItem}
+                                toggleItem={this.toggleItem}/>
+                        </div>
+                    );
+                }
+            }
+
+            class Goals extends React.Component {
+
+                addItem = (e) => {
+                    e.preventDefault();
+
+                    // THIS CODE IS MOVED INTO handleAddGoalThunk
+                    // return window.API.saveGoal(name)
+                    //     .then((savedGoal) => {
+                    //         const { id, name } = savedGoal;
+                    //         this.props.store.dispatch(addGoalActionCreator({ id, name}));
+                    //         this.input.value = '';
+                    //     })
+                    //     .catch(e => {
+                    //         alert('there was an error addItem goal', e);
+                    //     })
+
+                    const name = this.input.value
+                    this.props.dispatch(
+                        handleAddGoalThunk(
+                            name, 
+                            () => { this.input.value ='' }    
+                        )
+                    );
+                }
+                
+                removeItem = (goal) => {
+                    // this.props.store.dispatch(removeGoalActionCreator(goal.id))
+                    // return window.API.deleteGoal(goal.id)
+                    // .catch(() => {
+                    //     this.props.store.dispatch(addGoalActionCreator(goal));
+                    //     alert('could not delete goal try again...');
+                    // })
+                    this.props.dispatch(handleDeleteGoalThunk(goal));
+        
+                }
+
+                render() {
+                    return (
+                        <div>
+                            <h1>Goals</h1>
+                            <input
+                                type='text'
+                                placeholder='Add Goal'
+                                ref={(input) => this.input = input}
+                            />
+                            <button onClick={this.addItem}>Add Goal</button>
+                            <List items={this.props.goals} removeItem={this.removeItem} />
+                        </div>
+                    );
+                }
+            }
+
+            //------------------------------------------
+            // Connect Component to piece of store state
+            //------------------------------------------
+            // connect(...):
+            // Render any component, passing that component the data it needs from the store
+            function connect (fnMapStateToProps) {
+                return (Component) => {
+
+                    class Receiver extends React.Component {
+                        componentDidMount () {
+                            console.log('connect Receiver componentDidMount this.props.store', this.props.store);
+                            const { subscribe } = this.props.store;
+                            // "register" to subscribe to get updates when our store changes
+                            // The function passed in to subscribe will be invoked on all store updates
+                            // Reacts forceUpdate reRenders the component.
+                            this.unsubscribeFn = subscribe(() => {
+                                this.forceUpdate();
+                            })
+                        }
+
+                        componentWillUnmount() {
+                            this.unsubscribeFn();
+                        }
+                        
+                        render () {
+                            const { dispatch, getState } = this.props.store;
+                            const state = getState();
+                            const stateNeeded = fnMapStateToProps(state);
+
+                            return <Component {...stateNeeded} dispatch={dispatch}  />
+                        }
+                    }
+
+                    class ConnectedComponent extends React.Component {
+                        render () {
+                            return (
+                                <Context.Consumer>
+                                {
+                                    (storeFromContextProvider) => <Receiver store={storeFromContextProvider} />
+                                }
+                                </Context.Consumer>
+                            )
+                        }
+                    }
+                    return ConnectedComponent;
+                }
+            }
+
+            //--------------
+            // React CONTEXT
+            //--------------
+            const Context = React.createContext();
+
+            class Provider extends React.Component {
+                render () {
+                    console.log('Provider this.props.store', this.props.store);
+                    return (
+                        <Context.Provider value={this.props.store}>
+                            { this.props.children }
+                        </Context.Provider>
+                    )
+                }
+            }
+
+            // const ConnectedApp = connect((state) => ({
+            //     loading: state.loading
+            // }))(MyApp);
+            const myMapStateToPropsFunction = (state) => {
+                return { loading: state.loading };
+            }
+            const MyAppConnectedToContext = connect(myMapStateToPropsFunction)(MyApp);
+            // class MyAppConnectedToContext extends React.Component {
+            //     render() {
+            //         return (
+            //             // A Context.Consumer can get what it was given from the Context.Provider
+            //             <Context.Consumer>
+            //                 {
+            //                     (theStoreFromProvider) => (
+            //                         <MyApp store={theStoreFromProvider} />
+            //                     )
+            //                 }
+            //             </Context.Consumer>
+            //         )
+            //     }
+            // }
+
+            const myMapStateToPropsFunctionGoals = (state) => {
+                return { goals: state.goals };
+            };
+            const GoalsConnected = connect(myMapStateToPropsFunctionGoals)(Goals);
+            // class GoalsConnected extends React.Component {
+            //     render () {
+            //         console.log('@@@GoalsConnected');
+            //         return (
+            //             <Context.Consumer>
+            //                 {
+            //                     (theStoreFromProviderYo) => {
+            //                         const { dispatch } = theStoreFromProviderYo;
+            //                         const { goals } = theStoreFromProviderYo.getState();
+            //                         return <Goals goals={goals} dispatch={dispatch} />
+            //                     }
+            //                 }
+            //             </Context.Consumer>
+            //         )
+            //     }
+            // }
+            
+            const myMapStateToPropsFunctionTodos = (state) => {
+                return { todos: state.todos };
+            }
+            const TodosConnected = connect(myMapStateToPropsFunctionTodos)(Todos);
+            // class TodosConnected extends React.Component {
+            //     render () {
+            //         console.log('@@@TodosConnected');
+            //         return (
+            //             <Context.Consumer>
+            //                 {
+            //                     (theStoreFromProvider) => {
+            //                         const { dispatch } = theStoreFromProvider;
+            //                         const { todos } = theStoreFromProvider.getState();
+            //                         return <Todos todos={todos} dispatch={dispatch} />
+            //                     }
+            //                 }
+            //             </Context.Consumer>
+            //         )
+            //     }
+            // }
+
+            ReactDOM.render(
+                <Provider store={store}>
+                    <MyAppConnectedToContext/>
+                </Provider>,
+                document.getElementById('reactHookId'));
+        </script>
+        
+        <script type="text/javascript">
+
+            //--------------------------
+            // APPLICATION CODE below...
+            //--------------------------
+            const ADD_TODO = 'ADD_TODO'
+            const REMOVE_TODO = 'REMOVE_TODO'
+            const TOGGLE_TODO = 'TOGGLE_TODO'
+            const ADD_GOAL = 'ADD_GOAL'
+            const REMOVE_GOAL = 'REMOVE_GOAL'
+            const RECEIVE_DATA = 'RECEIVE_DATA'
+
+            //----------------
+            // ACTION CREATORS
+            //----------------
+            const addTodoActionCreator = todo => {
+                return {
+                    type: ADD_TODO,
+                    todo,
+                }
+            };
+
+            const removeTodoActionCreator = id => {
+                return {
+                    type: REMOVE_TODO,
+                    id,
+                }
+            }
+
+            const toggleTodoActionCreator = id => {
+                return {
+                    type: TOGGLE_TODO,
+                    id,
+                }
+            }
+
+            const addGoalActionCreator = goal => {
+                return {
+                    type: ADD_GOAL,
+                    goal,
+                }
+            }
+
+            const removeGoalActionCreator = id => {
+                return {
+                    type: REMOVE_GOAL,
+                    id,
+                }
+            }
+
+            const receiveDataActionCreator = (todos, goals) => {
+                return {
+                    type: RECEIVE_DATA,
+                    todos,
+                    goals,
+                }
+            }
+            
+            //-------------------------
+            // ACTION CREATORS - THUNKS
+            //-------------------------
+            // A "thunk" do more than just create an action, it can call APIs and more
+            // we need access to the dispatch
+
+            const handleLoadInitialDataLoadThunk = () => {
+                console.log('handleLoadInitialDataLoadThunk was invoked');
+                return (dispatch) => {
+                    return Promise.all([
+                        window.API.fetchTodos(),
+                        window.API.fetchGoals()
+                    ]).then(([todos, goals]) => {
+                        console.group('API todos goals');
+                        console.log('todos', todos);
+                        console.log('goals', goals);
+                        console.groupEnd();
+                        // add to store
+                        dispatch(receiveDataActionCreator(todos, goals));
+                    });
+                }
+            }
+
+            const handleDeleteTodoThunk = (todo) => {
+                console.log('handleDeleteTodoThunk(...)');
+                // how can this work you might ask, the answer is our created thunkIfyMiddleware that knows what to do
+                // when an action creator returns a function.
+                return (dispatch) => {
+                    dispatch(removeTodoActionCreator(todo.id));
+                    return window.API.deleteTodo(todo.id)
+                        .catch(() => {
+                            // Something went wrong we RE-ADD the todo once again to the state because is was not deleted from db..
+                            // Ideally insert at correct place... this will insert last in todo list.
+                            dispatch(addTodoActionCreator(todo));
+                            alert(`An error occured, could not delete "TODO", ${JSON.stringify(todo)}, so please try again`);
+                        });
+
+                };
+            };
+
+            const handleAddTodoThunk = (name, callBackFn) => {
+                console.log('handleAddTodoThunk(...)');
+                return (dispatch) => {
+                    return window.API.saveTodo(name)
+                        .then((savedTodo) => {
+                            // If "store" is global available as of writing this will work
+                            // store.dispatch();
+                            // If not as in most other cases the "store" must somehow be passed to the React component Todos
+                            // Then it is used like this.
+                            const { id, name, complete } = savedTodo; 
+                            dispatch(addTodoActionCreator({ id, name, complete }));
+                            callBackFn();
+                        })
+                        .catch(e => {
+                            alert('could not save TODO to database', e);
+                        })
+
+                }
+            }
+
+            const handleToggleTodoThunk = (todoId) => {
+                return (dispatch) => {
+                    dispatch(toggleTodoActionCreator(todoId));
+                    return window.API.saveTodoToggle(todoId)
+                        .catch(() => {
+                            // Re toggle
+                            dispatch(toggleTodoActionCreator(todoId));
+                            alert('could not toggle todo... try again');
+                    })
+                }
+            };
+
+            // A "thunk" do more than just create an action, it can call APIs and more
+            // we need access to the dispatch
+            const handleDeleteGoalThunk = (goal) => {
+                console.log('handleDeleteGoalThunk');
+                return (dispatch) => {
+                    dispatch(removeGoalActionCreator(goal.id))
+                    return window.API.deleteGoal(goal.id)
+                        .catch(() => {
+                            dispatch(addGoalActionCreator(goal));
+                            alert('could not delete goal try again...');
+                        })
+                }
+            }
+
+            const handleAddGoalThunk = (name, callBackFn) => {
+                console.log('handleAddGoalThunk');
+                return (dispatch) => {
+                    return window.API.saveGoal(name)
+                            .then((savedGoal) => {
+                                const { id, name } = savedGoal;
+                                dispatch(addGoalActionCreator({ id, name}));
+                                callBackFn();
+                            })
+                            .catch(e => {
+                                alert('there was an error addItem goal', e);
+                            })
+
+                }
+            }
+
+            //------------
+            // MIDDLEWARES
+            //------------
+            // Middlewares allow us to hook into Redux lifecycle
+            // ES5 way, redux middleware
+            function checker(store) {
+                console.log('checker es5 way');
+                // Currying
+                return function (next) { // next is the next middleware in the chain OR dispatch (if no more middlewares), dispatch will then call the reducer
+                    return function (action) {
+                        // Here is the middleware code
+                        if (action.type === ADD_TODO && action.todo.name.toLowerCase().indexOf('bitcoin') !== -1) {
+                            return alert("Nope. That's a bad idea.")
+                        }
+                        if (action.type === ADD_GOAL && action.goal.name.toLowerCase().indexOf('bitcoin') !== -1) {
+                            return alert("Nope. That's a bad idea.")
+                        }
+                        //return store.dispatch(action)
+                        return next(action); // There might be a "next" middlware that we need to call after our own middleware
+                    }
+                }
+            }
+
+            // ES6 way currying, redux middleware
+            const checkerES6ReduxMiddleware = (store) => (next) => (action) => {
+                console.log('checkerES6 middleware');
+                // Here is the middleware code
+                if (action.type === ADD_TODO && action.todo.name.toLowerCase().indexOf('bitcoin') !== -1) {
+                    return alert("Nope. That's a bad idea.")
+                }
+                if (action.type === ADD_GOAL && action.goal.name.toLowerCase().indexOf('bitcoin') !== -1) {
+                    return alert("Nope. That's a bad idea.")
+                }
+                //return store.dispatch(action)
+                // There might be a "next" middlware that we need to call after our own middleware
+                // If there was no other middleware next is actually "dispatch(action)"
+                return next(action); 
+            }
+
+            const loggerReduxMiddleware = (store) => (next) => (action) => {
+                console.group(action.type);
+                console.log('The action type', action);
+                // If this verry function "logger" is the LAST MIDDLEWARE in 
+                // the middleware chain "next" is actually "dispatch"
+                // like this => const result = dispatch(action);
+                // As we know "dispatch" updates the state of our "store"
+                const resultOfCallingNextWhichIsDispatchIfThisMiddleWareIsTheLastMiddleware = next(action);
+                console.log('The new state:', store.getState());
+                console.groupEnd();
+                return resultOfCallingNextWhichIsDispatchIfThisMiddleWareIsTheLastMiddleware;
+            }
+
+            const thunkIfyMiddleware = (store) => (next) => (action) => {
+                if (typeof action === 'function') {
+                    console.log('thunkIfyMiddleware detected that action creator returned a function... invoke that function passing it dispatch.');
+                    // The action created by the actionCreator was not an object it was a function!
+                    // There fore we now KNOW that we need to pass "dispatch" to that function (because we sat them rules...)
+                    return action(store.dispatch);
+                } 
+                // If this verry function "thunkIfyMiddleware" is the LAST MIDDLEWARE in 
+                // the middleware chain "next" is actually "dispatch" so dispatch(action) will be invoked
+                // If its not "next" is the next middleware in the chain of middlewares.
+                return next(action);
+                
+            }
+
+            //------------------------------
+            // Update state => "The Reducer"
+            //------------------------------
+            // "PURE" FUNCTIONS
+            // - return same result given same arguments. 
+            // - execution doesn't depend on the state of the application.
+            // - don't modify the variables outside of their scope.
+            // THE REDUCER
+            // - Updates current state based on action, 
+            // - The "reducer function" sets default state
+            // - Does not modify the state, it actually returns a totally NEW state object (there for fullfilling PURE...)
+            function todosReducer(currentState = [], action) {
+                switch (action.type) {
+                    case ADD_TODO:
+                        return currentState.concat([action.todo])
+                    case REMOVE_TODO:
+                        return currentState.filter((todo) => todo.id !== action.id)
+                    case TOGGLE_TODO:
+                        return currentState.map((todo) => todo.id !== action.id ? todo :
+                            Object.assign({}, todo, { complete: !todo.complete })
+                        )
+                    case RECEIVE_DATA:
+                        return action.todos // A whole array of todos is inside the action
+                    default:
+                        return currentState
+                }
+            };
+
+            function goalsReducer(currentState = [], action) {
+                switch (action.type) {
+                    case ADD_GOAL:
+                        return currentState.concat([action.goal])
+                    case REMOVE_GOAL:
+                        return currentState.filter((goal) => goal.id !== action.id)
+                    case RECEIVE_DATA:
+                        return action.goals // A whole array of goals is inside the action
+                    default:
+                        return currentState
+                }
+            };
+
+            function loadingReducer(state = true, action) {
+                switch (action.type) {
+                    case RECEIVE_DATA:
+                        return false
+                    default: 
+                        return state;
+                }
+            }
+
+            //--------------------
+            // Reducer composition
+            //--------------------
+            // // Our own implementatino of combining reducers
+            // // Pass in what is returned from this function as a "reducer" to the store
+            // function combinedReducers(state = {}, action) {
+            //     // Observe that each reducer gets passed its own part of the state!!!
+            //     return {
+            //         todos: todosReducer(state.todos, action),
+            //         goals: goalsReducer(state.goals, action),
+            //         loading: loadingReducer(state.loading, action),
+            //     }
+            // }
+
+            // The Redux way of combining Reducers
+            const combinedReducersRedux = 
+                Redux.combineReducers(
+                    { 
+                        todos: todosReducer, 
+                        goals: goalsReducer,
+                        loading: loadingReducer 
+                    }
+                );
+
+            //-----------------------
+            // MIDDLEWARE REDUX SETUP
+            //-----------------------
+            // const middlewaresForRedux = Redux.applyMiddleware(thunkIfyMiddleware ,checkerES6ReduxMiddleware, loggerReduxMiddleware);
+            // Replacing our own "thunkIfyMiddleware" against a Redux one... A verry popular and common thunkifyer to use in the Redux world.
+            // ReduxThunk was added to the global scope when including the script in the head for
+            const middlewaresForRedux = Redux.applyMiddleware(ReduxThunk.default ,checkerES6ReduxMiddleware, loggerReduxMiddleware);
+            //----------------
+            // IMPLEMENTATION
+            //----------------
+            // usage of store and actions ans reducers
+
+            // Our own way of createStore with our own combined reducers
+            // const store = createStore(combinedReducers)
+
+            // The Redux way of createStore
+            // "store" will be "globaly" in this file... accessible else where that is
+            const store = Redux.createStore(combinedReducersRedux, middlewaresForRedux);
+
+        </script>
+
+        <script type="text/javascript">
+            (function () {
+                window.API = {}
+
+                function fail () {
+                    return Math.floor(Math.random()*(5-1)) === 3
+                }
+
+                function generateId () {
+                    return Math.random().toString(36).substring(2);
+                }
+
+                var goals = [
+                    {
+                    id: generateId(),
+                    name: 'Learn Redux',
+                    },
+                    {
+                    id: generateId(),
+                    name: 'Read 50 books this year',
+                    },
+                ];
+                var todos = [
+                    {
+                    id: generateId(),
+                    name: 'Walk the dog',
+                    complete: false,
+                    },
+                    {
+                    id: generateId(),
+                    name: 'Wash the car',
+                    complete: false,
+                    },
+                    {
+                    id: generateId(),
+                    name: 'Go to the gym',
+                    complete: true,
+                    }
+                ];
+
+                API.fetchGoals = function () {
+                    return new Promise((res, rej) => {
+                    setTimeout(function () {
+                        res(goals)
+                    }, 2000)
+                    })
+                }
+
+                API.fetchTodos = function () {
+                    return new Promise((res, rej) => {
+                    setTimeout(function () {
+                        res(todos)
+                    }, 2000)
+                    })
+                }
+
+                API.saveTodo = function (name) {
+                    return new Promise((res, rej) => {
+                    setTimeout(() => {
+                        const todo = {
+                        id: generateId(),
+                        name: name,
+                        complete: false,
+                        }
+                        todos = todos.concat([todo]);
+                        fail() ? rej(todo) : res(todo);
+                    }, 300)
+                    })
+                }
+
+                API.saveGoal = function (name) {
+                    return new Promise((res, rej) => {
+                    setTimeout(() => {
+                        const goal = {
+                        id: generateId(),
+                        name: name,
+                        }
+                        goals = goals.concat([goal]);
+                        fail() ? rej(goal) : res(goal);
+                    }, 300)
+                    })
+                }
+
+                API.deleteGoal = function (id) {
+                    return new Promise((res, rej) => {
+                    setTimeout(() => {
+                        goals = goals.filter((goal) => goal.id !== id);
+                        fail() ? rej(): res(goals);
+                    }, 300)
+                    });
+                }
+
+                API.deleteTodo = function (id) {
+                    return new Promise((res, rej) => {
+                    setTimeout(() => {
+                        todos = todos.filter((todo) => todo.id !== id);
+                        fail() ? rej(): res(todos);
+                    }, 300)
+                    });
+                }
+
+                API.saveTodoToggle = function (id) {
+                    return new Promise((res, rej) => {
+                    setTimeout(() => {
+                        todos = todos.map((todo) => todo.id !== id ? todo :
+                        Object.assign({}, todo, {complete: !todo.complete})
+                        );
+
+                        fail() ? rej(): res(todos);
+                    }, 300)
+                    });
+                }
+            })()
+        </script>
+    </body>
+</html>

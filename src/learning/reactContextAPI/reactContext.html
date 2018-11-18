@@ -12,7 +12,9 @@
 
         <!-- Enables us to use a thunkifyer middleware to use instead of our own written middleware that we called "thunkIfyMiddleware"-->
         <!-- See Redux.applyMiddleware(...) further below in code for when it is given to redux -->
-        <script src='https://unpkg.com/redux-thunk@2.2.0/dist/redux-thunk.min.js'></script>
+        <!--
+            <script src='https://unpkg.com/redux-thunk@2.2.0/dist/redux-thunk.min.js'></script>
+        -->
 
         <!-- Redux Promise - FSA-compliant promise middleware for Redux. https://github.com/redux-utilities/redux-promise-->
         <!-- Redux Saga - An alternative side effect model for Redux apps https://github.com/redux-saga/redux-saga-->
@@ -57,7 +59,7 @@
                 );
             }
 
-            function GrandChild ({name}) {
+            function GrandChild () {
                 return (
                     <Context.Consumer>
                         {
