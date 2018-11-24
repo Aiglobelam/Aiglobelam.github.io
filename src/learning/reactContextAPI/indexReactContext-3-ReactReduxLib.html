@@ -16,6 +16,9 @@
 
         <!-- Redux Promise - FSA-compliant promise middleware for Redux. https://github.com/redux-utilities/redux-promise-->
         <!-- Redux Saga - An alternative side effect model for Redux apps https://github.com/redux-saga/redux-saga-->
+
+        <!-- React Redux lets us skip implement our own connect method -->
+        <script src='https://unpkg.com/react-redux@5.0.6/dist/react-redux.min.js'></script>
     </head>
     <body>
 
@@ -190,65 +193,67 @@
                 }
             }
 
-            //------------------------------------------
-            // Connect Component to piece of store state
-            //------------------------------------------
-            // connect(...):
-            // Render any component, passing that component the data it needs from the store
-            function connect (fnMapStateToProps) {
-                return (Component) => {
+            // Removed when we instead used library react-redux
+            // //------------------------------------------
+            // // Connect Component to piece of store state
+            // //------------------------------------------
+            // // connect(...):
+            // // Render any component, passing that component the data it needs from the store
+            // function connect (fnMapStateToProps) {
+            //     return (Component) => {
 
-                    class Receiver extends React.Component {
-                        componentDidMount () {
-                            console.log('connect Receiver componentDidMount this.props.store', this.props.store);
-                            const { subscribe } = this.props.store;
-                            // "register" to subscribe to get updates when our store changes
-                            // The function passed in to subscribe will be invoked on all store updates.
-                            // We want to cause a re render if our piece of state has changed
-                            // Usually re render is done when calling react setState(...)
-                            // But now we use forceUpdate to cause a render ()
-                            // the render below will be invoked and send the new props to the component
-                            // it the props have changed that component will get re rendered in the dom.
-                            // The question is could we use setState here... hmm...
-                            // this.setState(this.state) use the same state as before? yes that actually work.
-                            this.unsubscribeFn = subscribe(() => {
-                                this.forceUpdate();
-                                //this.setState(this.state)
-                            })
-                        }
+            //         class Receiver extends React.Component {
+            //             componentDidMount () {
+            //                 console.log('connect Receiver componentDidMount this.props.store', this.props.store);
+            //                 const { subscribe } = this.props.store;
+            //                 // "register" to subscribe to get updates when our store changes
+            //                 // The function passed in to subscribe will be invoked on all store updates.
+            //                 // We want to cause a re render if our piece of state has changed
+            //                 // Usually re render is done when calling react setState(...)
+            //                 // But now we use forceUpdate to cause a render ()
+            //                 // the render below will be invoked and send the new props to the component
+            //                 // it the props have changed that component will get re rendered in the dom.
+            //                 // The question is could we use setState here... hmm...
+            //                 // this.setState(this.state) use the same state as before? yes that actually work.
+            //                 this.unsubscribeFn = subscribe(() => {
+            //                     this.forceUpdate();
+            //                     //this.setState(this.state)
+            //                 })
+            //             }
 
-                        componentWillUnmount() {
-                            this.unsubscribeFn();
-                        }
+            //             componentWillUnmount() {
+            //                 this.unsubscribeFn();
+            //             }
                         
-                        render () {
-                            const { dispatch, getState } = this.props.store;
-                            const state = getState();
-                            const stateNeeded = fnMapStateToProps(state);
+            //             render () {
+            //                 const { dispatch, getState } = this.props.store;
+            //                 const state = getState();
+            //                 const stateNeeded = fnMapStateToProps(state);
 
-                            return <Component {...stateNeeded} dispatch={dispatch}  />
-                        }
-                    }
+            //                 return <Component {...stateNeeded} dispatch={dispatch}  />
+            //             }
+            //         }
 
-                    class ConnectedComponent extends React.Component {
-                        render () {
-                            return (
-                                <Context.Consumer>
-                                {
-                                    (storeFromContextProvider) => <Receiver store={storeFromContextProvider} />
-                                }
-                                </Context.Consumer>
-                            )
-                        }
-                    }
-                    return ConnectedComponent;
-                }
-            }
+            //         class ConnectedComponent extends React.Component {
+            //             render () {
+            //                 return (
+            //                     <Context.Consumer>
+            //                     {
+            //                         (storeFromContextProvider) => <Receiver store={storeFromContextProvider} />
+            //                     }
+            //                     </Context.Consumer>
+            //                 )
+            //             }
+            //         }
+            //         return ConnectedComponent;
+            //     }
+            // }
 
             //--------------
             // React CONTEXT
             //--------------
-            const Context = React.createContext();
+            // Removed when we instead used library react-redux
+            // const Context = React.createContext();
 
             class Provider extends React.Component {
                 render () {
@@ -261,74 +266,27 @@
                 }
             }
 
-            // const ConnectedApp = connect((state) => ({
-            //     loading: state.loading
-            // }))(MyApp);
             const myMapStateToPropsFunction = (state) => {
                 return { loading: state.loading };
             }
-            const MyAppConnectedToContext = connect(myMapStateToPropsFunction)(MyApp);
-            // class MyAppConnectedToContext extends React.Component {
-            //     render() {
-            //         return (
-            //             // A Context.Consumer can get what it was given from the Context.Provider
-            //             <Context.Consumer>
-            //                 {
-            //                     (theStoreFromProvider) => (
-            //                         <MyApp store={theStoreFromProvider} />
-            //                     )
-            //                 }
-            //             </Context.Consumer>
-            //         )
-            //     }
-            // }
+            const MyAppConnectedToContext =  ReactRedux.connect(myMapStateToPropsFunction)(MyApp);
+
 
             const myMapStateToPropsFunctionGoals = (state) => {
                 return { goals: state.goals };
             };
-            const GoalsConnected = connect(myMapStateToPropsFunctionGoals)(Goals);
-            // class GoalsConnected extends React.Component {
-            //     render () {
-            //         console.log('@@@GoalsConnected');
-            //         return (
-            //             <Context.Consumer>
-            //                 {
-            //                     (theStoreFromProviderYo) => {
-            //                         const { dispatch } = theStoreFromProviderYo;
-            //                         const { goals } = theStoreFromProviderYo.getState();
-            //                         return <Goals goals={goals} dispatch={dispatch} />
-            //                     }
-            //                 }
-            //             </Context.Consumer>
-            //         )
-            //     }
-            // }
+            const GoalsConnected =  ReactRedux.connect(myMapStateToPropsFunctionGoals)(Goals);
+
             
             const myMapStateToPropsFunctionTodos = (state) => {
                 return { todos: state.todos };
             }
-            const TodosConnected = connect(myMapStateToPropsFunctionTodos)(Todos);
-            // class TodosConnected extends React.Component {
-            //     render () {
-            //         console.log('@@@TodosConnected');
-            //         return (
-            //             <Context.Consumer>
-            //                 {
-            //                     (theStoreFromProvider) => {
-            //                         const { dispatch } = theStoreFromProvider;
-            //                         const { todos } = theStoreFromProvider.getState();
-            //                         return <Todos todos={todos} dispatch={dispatch} />
-            //                     }
-            //                 }
-            //             </Context.Consumer>
-            //         )
-            //     }
-            // }
+            const TodosConnected =  ReactRedux.connect(myMapStateToPropsFunctionTodos)(Todos);
 
             ReactDOM.render(
-                <Provider store={store}>
+                <ReactRedux.Provider store={store}>
                     <MyAppConnectedToContext/>
-                </Provider>,
+                </ReactRedux.Provider>,
                 document.getElementById('reactHookId'));
         </script>
         
