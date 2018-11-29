@@ -1,9 +1,9 @@
 //----------------
 // WEBPACK CONFIG
 //----------------
-// 1) Where are the starting point of your application / root JavaScript file.
-// 2) Which transformations to execute on code.
-// 3) Where to place the transformed code.
+// 1) Where are the starting point of your application / root JavaScript file?
+// 2) Which transformations to execute on code?
+// 3) Where to place the transformed code?
 
 var path = require('path');
 
@@ -12,31 +12,43 @@ var path = require('path');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    // 1) entyry: Where are the starting point of your application / root JavaScript file.
+    // ---------
+    // 1) entry: Specifies starting point of your application / root JavaScript file.
+    // ---------
     //    * @babel/polyfill:
     //      https://babeljs.io/docs/en/babel-polyfill
-    //      Can be used in webpack several diffrent ways. In our case we to not specift "useBuiltIns" any where...
-    //      RULE: If useBuiltIns key is not specified or it is explicitly set with useBuiltIns: false
-    //            in your .babelrc, add @babel/polyfill directly to the entry array in your webpack.config.js.
-    //            Which is what we do here.
-    //      @babel/polyfill: Babel includes a polyfill that includes a custom regenerator runtime and
-    //      core-js. This will emulate a full ES2015+ environment (no < Stage 4 proposals) and is 
-    //      intended to be used in an application rather than a library/tool. (this polyfill is 
-    //      automatically loaded when using babel-node). This means you can use new built-ins like Promise
-    //      or WeakMap, static methods like Array.from or Object.assign, instance methods like 
-    //      Array.prototype.includes, and generator functions (provided you use the regenerator plugin)
-    //      The polyfill adds to the global scope as well as native prototypes like String in order to do this.
+    //      Can be used in webpack several diffrent ways...
+    //      RULEs: 
+    //       - In file .babelrc
+    //       - If "useBuiltIns" key is not specified => (nope I do not even have a .babelrc)
+    //       - Or if useBuiltIns is explicitly set with a value like useBuiltIns: false => (nope have not done that)
+    //      SOLUTION:
+    //       - Add @babel/polyfill directly to the entry array in your webpack.config.js => (Which is what we done below)
+    //      WHAT IS @babel/polyfill?
+    //       - Babel includes a polyfill that includes a custom regenerator runtime and core-js.
+    //         This will emulate a full ES2015+ environment (no < Stage 4 proposals) and is 
+    //         intended to be used in an application rather than a library/tool. (This polyfill is 
+    //         automatically loaded when using babel-node). This means you can use new built-ins like Promise
+    //         or WeakMap, static methods like Array.from or Object.assign, instance methods like 
+    //         Array.prototype.includes, and generator functions (provided you use the regenerator plugin)
+    //         The polyfill adds to the global scope as well as native prototypes like String in order to do this.
     //    * whatwg-fetch
-    //      A Polyfill for fetch (which is a XMLHttpRequest killer) or a replacement for libraries such as Axios
-    //      It is pretty well supported in the browsers.
-    //      https://caniuse.com/#feat=fetch
-    //      Module: https://github.com/github/fetch
+    //      https://github.com/github/fetch
+    //      WHAT IS whatwg-fetch?
+    //       - A Polyfill for fetch (which is a XMLHttpRequest killer) or a replacement for libraries such as Axios
+    //         It is pretty well supported in the browsers.
+    //         https://caniuse.com/#feat=fetch 
     entry: ['@babel/polyfill', 'whatwg-fetch', './src/index.js'],
+    // Note: Loaders load from bottom to top and right to left
+    // Loaders are activated/used in our code by using loadername! prefixes in require() statements
+    // or are automatically applied via "test:" regex from your webpack configuration
     module: {
+        // rules replaces "loaders" since webpack 2, https://webpack.js.org/migrate/4/#module-loaders
+        // The rule at the bottom of the "rules" array are the rule/loader that are run first.
         rules: [
-            // Execure babel-loader on all *.js files
-            // Looks in package.json for "babel" presets array
-            // "env"   (preset-env)   => we are able to use modern JS syntax in our codebase
+            // Execute babel-loader on all *.js files
+            // Looks in package.json for "babel" presets array => (I do not have that, specified at options instead)
+            // "env"   (preset-env)   => We are able to use modern JS syntax in our codebase
             // "react" (preset-react) => React will be transpiled to JS code
             {
                 test: /\.(js)$/,
@@ -46,16 +58,19 @@ module.exports = {
                     options: {
                         presets: ['@babel/preset-env', '@babel/preset-react'],
                         // https://babeljs.io/docs/plugins/transform-class-properties/
-                        // Use arrow notation on class fields (skipping bind this...)
+                        // Use arrow notation on class fields (skipping us to bind this...)
                         // Allow us to add specific properties to our components/classes
                         plugins: ['@babel/plugin-proposal-class-properties']
                     }
                 }
             },
-            // style-loader
-            // Take css and insert on page so css becomes active
-            // css-loader
-            // Any time it sees an import or url('') those will be changed to require('') statements
+            // Notice that loaders used like this are applied from right to left so 1st css-loader 2nd style-loader is run
+            // 2) style-loader
+            //  - Adds CSS to the DOM by injecting a <style> tag
+            //  - Take css and insert on page so css becomes active
+            // 1) css-loader
+            //  - Looks in source code/files as specified by test:
+            //  - Searches for "@import" and "url(..)" and treats/changes them to import/require() and resolves them.
             { test: /\.css$/, use: ['style-loader', 'css-loader'] }
         ],
     },
