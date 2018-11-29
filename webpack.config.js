@@ -39,9 +39,20 @@ module.exports = {
     //         It is pretty well supported in the browsers.
     //         https://caniuse.com/#feat=fetch 
     entry: ['@babel/polyfill', 'whatwg-fetch', './src/index.js'],
-    // Note: Loaders load from bottom to top and right to left
-    // Loaders are activated/used in our code by using loadername! prefixes in require() statements
-    // or are automatically applied via "test:" regex from your webpack configuration
+    // WEBPACK:
+    //  - Knows only javascript and JSON files, so when we want it to pack any other type of resources like .css or .scss or .ts. 
+    //    Webpack needs help in order to compile and bundle those non-javascript types of resources.
+    // LOADERS:
+    //  - Configured in module.rules array
+    //  - The node-based utilities built for webpack to help webpack to compile and/or transform a given type of resource
+    //    so that it can be bundled as a javascript module.
+    //  - Loaders load from bottom to top and right to left
+    //  - ACTIVATION:
+    //     - In src code/files loaders are activated/used by using "loadername!" prefixes in require() statements.
+    //        ex) if the loader name is "base64-image"
+    //            var fileAsBase64Src = require("base64-image!./file.png");
+    //            document.write('<img src="' + fileAsBase64Src + '" />';
+    //     - In webpack config applied using "test:" regex (which is the file you are reading right now)
     module: {
         // rules replaces "loaders" since webpack 2, https://webpack.js.org/migrate/4/#module-loaders
         // The rule at the bottom of the "rules" array are the rule/loader that are run first.
@@ -68,9 +79,13 @@ module.exports = {
             // 2) style-loader
             //  - Adds CSS to the DOM by injecting a <style> tag
             //  - Take css and insert on page so css becomes active
+            //  - By default, the style-loader inserts the <style> elements into the <head> tag of the page.
             // 1) css-loader
             //  - Looks in source code/files as specified by test:
-            //  - Searches for "@import" and "url(..)" and treats/changes them to import/require() and resolves them.
+            //  - Searches for "@import" and "url(..)" in found code/files and
+            //    treats/changes them to import/require() and resolves them.
+            //  - css-loader is the npm module that would help webpack to collect CSS
+            //    from all the css files referenced in your application and put it into a string.
             { test: /\.css$/, use: ['style-loader', 'css-loader'] }
         ],
     },
