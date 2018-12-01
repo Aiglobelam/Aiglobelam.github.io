@@ -64,7 +64,6 @@ class Battle extends React.Component {
 
     render () {
         const { playerOneImage, playerTwoImage, playerOneName, playerTwoName } = this.state;
-
         return (
             <div>
                 <div className='row'>

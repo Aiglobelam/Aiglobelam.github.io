@@ -48,13 +48,13 @@ module.exports = {
     //    so that it can be bundled as a javascript module.
     //  - Loaders load from bottom to top and right to left
     //  - ACTIVATION:
-    //     - In src code/files loaders are activated/used by using "loadername!" prefixes in require() statements.
-    //        ex) if the loader name is "base64-image"
-    //            var fileAsBase64Src = require("base64-image!./file.png");
+    //     - A) In src code/files the loaders are activated/used by using "loadername!" prefixes in require() statements.
+    //        ex) if the loader name is "base64-image" we can use it "inline" like this:
+    //            const fileImageAsBase64 = require("base64-image!./file.png");
     //            document.write('<img src="' + fileAsBase64Src + '" />';
-    //     - In webpack config applied using "test:" regex (which is the file you are reading right now)
+    //     - B) In the "webpack-config-file" (file you are reading now) applied using a "test:" regex
     module: {
-        // rules replaces "loaders" since webpack 2, https://webpack.js.org/migrate/4/#module-loaders
+        // "module.rules" replaces "module.loaders" since webpack 2, https://webpack.js.org/migrate/4/#module-loaders
         // The rule at the bottom of the "rules" array are the rule/loader that are run first.
         rules: [
             // Execute babel-loader on all *.js files
@@ -86,7 +86,39 @@ module.exports = {
             //    treats/changes them to import/require() and resolves them.
             //  - css-loader is the npm module that would help webpack to collect CSS
             //    from all the css files referenced in your application and put it into a string.
-            { test: /\.css$/, use: ['style-loader', 'css-loader'] }
+            { 
+                test: /\.css$/, 
+                use: ['style-loader', 'css-loader'] 
+            },
+            // url-loader (will fail if not file-loader is in project)
+            // A loader for webpack which transforms files into base64 URIs
+            // In our case it searches in our code for files (file imports / requires)
+            // And if they are below options.limit nbr of bytes they are transformed into
+            // base64 else they will be handled by the "file-loader" as is default for the "url-loader"
+            // ex) import BelowLimitImage from '../images/aVerySmallImage.jpg'
+            //     // BelowLimitImage will be transformed into a basde64 encoded string.
+            //     <img src={BelowLimitImage} />
+            // ex) import OverLimitImage from '../images/aVeryLargeImage.jpg'    
+            //     // The img is over the limit for base64 encoding
+            //     // Webpack will bundle image in the built code bundle as ranDoMHash.jpg
+            //     // The webserver will servre ranDoMHash.jpg when it is requested
+            //     // The image src string will point to that image
+            //     <img src={OverLimitImage} />
+            // ex) A usage like this will not work! The ulr loader will only work in imported images.
+            //     If a url like this is used make sure the path points to a catalogue that is served
+            //     By the webserber (or perhaps external CDN)
+            //     <img src={'images/dnb_header_mobile@2x.jpg'} />
+            {
+                test: /\.(png|jpg|gif)$/i,
+                use: [
+                    {
+                        loader: 'url-loader',
+                        options: {
+                            limit: 230000
+                        }
+                    }
+                ]
+            }
         ],
     },
     // 3) Where to place the transformed code.
