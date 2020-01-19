@@ -11,6 +11,58 @@
                 border: 1px solid black;
             }
         </style>
+
+        <script>
+          // { k:'', v: ''},
+          let c64Links = {
+            'links': [
+              { k:'Jim Butterfield - Compute! Magazine Issue 028', v: 'https://archive.org/details/1982-09-compute-magazine/page/n45'},
+              { k:'6502 Instruction Set', v: 'https://www.masswerk.at/6502/6502_instruction_set.html#AND'},
+              { k:'6502.org Tutorials: 65C02 Opcodes', v: 'http://6502.org/tutorials/65c02opcodes.html'},
+              { k:'64bites/64spec: 6502/Commodore64 Testing Framework for KickAssembler', v: 'https://github.com/64bites/64spec'},
+              { k:'Video: Lesson P9 - Bitmap Functions on the C64 - ChibiAkumas ASM Programming Forum', v: 'https://www.chibiakumas.com/forum/viewtopic.php?t=115'},
+              { k:'6502.org: Tutorials: Compare Instructions', v: 'http://6502.org/tutorials/compare_instructions.html'},
+              { k:'Producing Commodore 64 programs', v: 'https://michaelcmartin.github.io/Ophis/book/x72.html'},
+              { k:'BASIC | Retrointernals', v: 'http://www.retrointernals.org/basic/basic.html'},
+              { k:'64 Bites', v: 'https://64bites.com/seasons/all/'},
+              { k:'6502/6510/8500/8502 Opcodes', v: 'http://www.oxyron.de/html/opcodes02.html'},
+              { k:'Retro Game Development | retrogamedev | Home', v: 'https://www.retrogamedev.com/'},
+              { k:'Commodore 64 memory map', v: 'http://sta.c64.org/cbm64mem.html'},
+              { k:'Aiglobelam/c64: My C64 projects', v: 'https://github.com/Aiglobelam/c64'},
+              { k:'auto run prg - c64 0326 startup routine', v: 'https://www.lemon64.com/forum/viewtopic.php?t=58259&sid=828852cea98a64b0f251fa0a043fbfa4'},
+            ],
+            'colors': [
+              { k:'Commodore 64 color codes', v:'http://sta.c64.org/cbm64col.html'},
+              { k:'C64 Colours |', v: 'http://www.0xc64.com/2013/12/01/c64-colours/'},
+              { k:'base:vicii_memory_organizing [Codebase 64 wiki]', v: 'http://codebase64.org/doku.php?id=base:vicii_memory_organizing'},
+            ],
+            'sprites': [
+              { k:'Sprite stretching to ridiculous heights - Commodore 64 (C64) Forum', v: 'https://www.lemon64.com/forum/viewtopic.php?t=44549&sid=b0e16deaeb5a5835baa2178aab5d817b'},
+              { k:'Subchrist Software - SpritePad', v: 'https://www.subchristsoftware.com/spritepad.htm'},
+              { k:'spritemate - the Commodore 64 sprite editor by awsm', v: 'http://www.spritemate.com/'},
+            ],
+            'IDEs': [
+              { k:'Free Virtual Machines from IE8 to MS Edge - Microsoft Edge', v: 'https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/'},
+              { k:'Development', v: 'https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/'},
+              { k:'Relaunch64 - A C64/65xx cross-development IDE by Testicle & Fabu of Payday and Soci of Singular.', v: 'http://www.popelganda.de/relaunch64.html'},
+              { k:'Eclipse plugin ? - WUDSN', v: 'http://www.wudsn.com/index.php/ide'},
+              { k:'Win - CBM prg Studio', v: 'http://www.ajordison.co.uk/download.html'},
+            ],
+            'Assemblers Compilers': [
+              { k:'Chapter 1. Introduction', v: 'http://theweb.dk/KickAssembler/webhelp/content/cpt_Introduction.html'},
+              { k:'Dasm - Dillon', v: 'https://sourceforge.net/projects/dasm-dillon/'},
+              { k:'dasm 6502 cross assembler documentation', v: 'http://www.expertsetup.net/~brian/dasm/index.html'},              
+            ],
+            'Emulators': [
+              { k:'Vice', v: 'http://vice-emu.sourceforge.net/'},
+              { k:'Power64 - Commodore C64 Emulator for the Power Macintosh', v: 'http://www.power64.com/'},
+            ],
+            'Debuggers': [
+              { k:'C64 65XE Debugger download | SourceForge.net', v: 'https://sourceforge.net/projects/c64-debugger/'},
+              { k:'sunsided/c64-debugger: Mirror of the awesome C64 Debugger project hosted on SourceForge', v: 'https://github.com/sunsided/c64-debugger'},
+            ]
+          }
+        </script>
     </head>
     <body>
         <p>
@@ -23,7 +75,6 @@
                 </tr>
             </thead>
             <tbody>
-                
                 <tr>
                     <td>Aiglobelam pages @ Github IO</td>
                     <td><a href="https://github.com/Aiglobelam/Aiglobelam.github.io/">view src</a></td>
@@ -37,7 +88,7 @@
                 </tr>
                 
                 <tr>
-                    <td><a href="https://github.com/Aiglobelam/c64">C64</a></td>
+                    <td><a href="https://github.com/Aiglobelam/c64">Jim Butterfield</a></td>
                     <td colspan="2">
                         <ul>
                             <li>
@@ -50,8 +101,40 @@
                         </ul>
                     </td>
                 </tr>
-                
-            </tbody>
+              </tbody>
         </table>
+        <br>
+        <br>
+        <table>
+          <tbody>
+              <!-- ------------------------------------------------------------ -->
+              <!-- C64Links -->
+              <!-- ------------------------------------------------------------ -->
+              <tr >
+                <td colspan="3" style="background-color: cyan;"><center>C64 links</center></td>
+              </tr>
+              <tr >
+                  <td colspan="3" id="c64Links"></td>                    
+              </tr>
+              <script>
+                  const c64linksElement = document.getElementById("c64Links");
+                  const keys = Object.keys(c64Links)
+                  keys.forEach((linkCategoryName) => {
+                    const ul = document.createElement("ul");
+                    ul.appendChild(document.createTextNode(`${linkCategoryName}: `))
+                    c64linksElement.appendChild(ul)
+                    c64Links[linkCategoryName].forEach((link) => {
+                      const li = document.createElement("li");
+                      const a = document.createElement('a');
+                            a.appendChild(document.createTextNode(link.k))
+                            a.setAttribute('href', link.v)
+                            a.setAttribute('target', '_blank')
+                      li.appendChild(a)
+                      ul.appendChild(li)
+                    })
+                  })
+              </script>
+          </tbody>
+      </table>
     </body>
 </html>
